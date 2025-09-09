@@ -9,7 +9,14 @@ export default class ChatMessagePanel extends LightningElement {
 
     @wire(getMessages, { threadId: '$threadId', limitSize: 100 })
     wiredMessages({ error, data }) {
-        if (data) this.messages = data;
+        if (data) {
+            this.messages = data.map(m => ({
+                ...m,
+                isSynced: m.SyncStatus__c === 'Synced',
+                isPending: m.SyncStatus__c === 'Pending',
+                isFailed: m.SyncStatus__c === 'Failed'
+            }));
+        }
         // else ignore error for brevity
     }
 
@@ -21,9 +28,7 @@ export default class ChatMessagePanel extends LightningElement {
         return !this.threadId || !this.newBody || this.newBody.length === 0;
     }
 
-    isSynced(m) { return m.SyncStatus__c === 'Synced'; }
-    isPending(m) { return m.SyncStatus__c === 'Pending'; }
-    isFailed(m)  { return m.SyncStatus__c === 'Failed'; }
+    // flags moved into each message for template usage
 
     async send() {
         try {
@@ -39,4 +44,3 @@ export default class ChatMessagePanel extends LightningElement {
         }
     }
 }
-

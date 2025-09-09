@@ -24,10 +24,11 @@ export default class ChatThreadList extends LightningElement {
 
     async createThread() {
         try {
-            const id = await createThreadApex({ title: this.newTitle });
+            const title = this.newTitle;
+            const id = await createThreadApex({ title });
             this.newTitle = '';
             await this.refresh();
-            this.dispatchEvent(new CustomEvent('threadselect', { detail: { threadId: id } }));
+            this.dispatchEvent(new CustomEvent('threadselect', { detail: { threadId: id, threadName: title } }));
         } catch (e) {
             // eslint-disable-next-line no-console
             console.error(e);
@@ -36,7 +37,7 @@ export default class ChatThreadList extends LightningElement {
 
     selectThread(e) {
         const id = e.currentTarget.dataset.id;
-        this.dispatchEvent(new CustomEvent('threadselect', { detail: { threadId: id } }));
+        const name = e.currentTarget.dataset.name;
+        this.dispatchEvent(new CustomEvent('threadselect', { detail: { threadId: id, threadName: name } }));
     }
 }
-

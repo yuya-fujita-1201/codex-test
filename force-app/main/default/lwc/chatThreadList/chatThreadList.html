@@ -1,15 +1,15 @@
 <template>
-    <lightning-card title="Threads">
+    <lightning-card title="スレッド">
         <div class="slds-p-horizontal_small slds-p-vertical_x-small">
-            <lightning-input label="New Thread Title" value={newTitle} maxlength="80" onchange={handleTitleChange}></lightning-input>
-            <lightning-button class="slds-m-top_x-small" label="Create" variant="brand" onclick={createThread} disabled={disableCreate}></lightning-button>
+            <lightning-input label="スレッドのタイトル" placeholder="タイトルを入力" value={newTitle} maxlength="80" onchange={handleTitleChange}></lightning-input>
+            <lightning-button class="slds-m-top_x-small" label="作成" variant="brand" onclick={createThread} disabled={disableCreate}></lightning-button>
         </div>
         <template if:true={threads}>
             <ul class="slds-has-dividers_around-space">
                 <template for:each={threads} for:item="t">
                     <li key={t.Id} class="slds-item slds-p-around_small slds-grid slds-grid_align-spread">
                         <span>{t.Name}</span>
-                        <lightning-button variant="base" label="Open" data-id={t.Id} onclick={selectThread}></lightning-button>
+                        <lightning-button variant="base" label="開く" data-id={t.Id} data-name={t.Name} onclick={selectThread}></lightning-button>
                     </li>
                 </template>
             </ul>

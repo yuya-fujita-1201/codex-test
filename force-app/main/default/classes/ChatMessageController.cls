@@ -12,8 +12,8 @@ public with sharing class ChatMessageController {
 
     @AuraEnabled
     public static Id createThread(String title) {
-        if (String.isBlank(title)) throw new AuraHandledException('Title is required');
-        if (title.length() > 80) throw new AuraHandledException('Title must be 80 characters or less');
+        if (String.isBlank(title)) throw new AuraHandledException('タイトルは必須です');
+        if (title.length() > 80) throw new AuraHandledException('タイトルは80文字以内で入力してください');
         ChatThread__c t = new ChatThread__c(Name = title, Status__c = 'Active');
         insert t;
         return t.Id;
@@ -34,9 +34,9 @@ public with sharing class ChatMessageController {
 
     @AuraEnabled
     public static Id postMessage(Id threadId, String body) {
-        if (threadId == null) throw new AuraHandledException('ThreadId is required');
-        if (String.isBlank(body)) throw new AuraHandledException('Message body is required');
-        if (body.length() > 1000) throw new AuraHandledException('Body must be 1000 characters or less');
+        if (threadId == null) throw new AuraHandledException('スレッドが選択されていません');
+        if (String.isBlank(body)) throw new AuraHandledException('メッセージ本文は必須です');
+        if (body.length() > 1000) throw new AuraHandledException('本文は1000文字以内で入力してください');
         ChatMessage__c m = new ChatMessage__c(
             Thread__c = threadId,
             Body__c = body,

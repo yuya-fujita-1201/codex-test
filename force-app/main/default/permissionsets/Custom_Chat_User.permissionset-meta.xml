@@ -67,11 +67,7 @@
         <field>ChatMessage__c.Body__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ChatMessage__c.Thread__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
+    <!-- Omit FLS for master-detail field ChatMessage__c.Thread__c -->
     <fieldPermissions>
         <editable>true</editable>
         <field>ChatMessage__c.PostedBy__c</field>
@@ -102,5 +98,18 @@
         <field>ChatMessage__c.ReplyTo__c</field>
         <readable>true</readable>
     </fieldPermissions>
-</PermissionSet>
 
+    <!-- Tab visibility -->
+    <tabSettings>
+        <tab>Chat_Workspace</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>ChatThread__c</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>ChatMessage__c</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+</PermissionSet>

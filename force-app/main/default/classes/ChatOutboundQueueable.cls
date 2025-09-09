@@ -10,9 +10,13 @@ public with sharing class ChatOutboundQueueable implements Queueable, Database.A
         if (messageIds.isEmpty()) return;
         Integer start = 0;
         while (start < messageIds.size()) {
-            Integer end = Math.min(start + BATCH_SIZE, messageIds.size());
-            processChunk(messageIds.subList(start, end));
-            start = end;
+            Integer endIndex = Math.min(start + BATCH_SIZE, messageIds.size());
+            List<Id> chunk = new List<Id>();
+            for (Integer i = start; i < endIndex; i++) {
+                chunk.add(messageIds[i]);
+            }
+            processChunk(chunk);
+            start = endIndex;
         }
     }
 
@@ -66,4 +70,3 @@ public with sharing class ChatOutboundQueueable implements Queueable, Database.A
         if (!updates.isEmpty()) update updates;
     }
 }
-

@@ -3,6 +3,8 @@ trigger ChatMessageTrigger on ChatMessage__c (after insert, after update) {
     List<ChatMessage__c> toUpdate = new List<ChatMessage__c>();
     List<ChatMessage__c> toPublish = new List<ChatMessage__c>();
     for (ChatMessage__c m : Trigger.new) {
+        // Skip records that originated from external system (have ExternalMessageId__c)
+        if (m.ExternalMessageId__c != null) continue;
         ChatMessage__c oldM = Trigger.isUpdate ? Trigger.oldMap.get(m.Id) : null;
         Boolean isChanged = Trigger.isInsert || (oldM.Body__c != m.Body__c);
         if (isChanged) {
@@ -17,4 +19,3 @@ trigger ChatMessageTrigger on ChatMessage__c (after insert, after update) {
     if (!toUpdate.isEmpty()) update toUpdate;
     if (!toPublish.isEmpty()) ChatEventBus.publishMessageOut(toPublish);
 }
-

@@ -1,4 +1,19 @@
 <template>
+    <div class="slds-page-header slds-m-bottom_small">
+        <div class="slds-media">
+            <div class="slds-media__figure slds-align_absolute-center">
+                <lightning-icon icon-name="utility:chat" size="small"></lightning-icon>
+            </div>
+            <div class="slds-media__body">
+                <h1 class="slds-page-header__title slds-truncate" title="チャット ワークスペース">チャット ワークスペース</h1>
+                <p class="slds-page-header__meta slds-truncate" title={threadName}>
+                    <template if:true={threadName}>選択中: {threadName}</template>
+                    <template if:false={threadName}>スレッドを選択または作成してください</template>
+                </p>
+            </div>
+        </div>
+    </div>
+
     <div class="slds-grid slds-gutters">
         <div class="slds-col slds-size_1-of-3">
             <c-chat-thread-list onthreadselect={handleThreadSelect}></c-chat-thread-list>
@@ -8,4 +23,3 @@
         </div>
     </div>
 </template>
-
