@@ -1,0 +1,30 @@
+<template>
+    <lightning-card title="Thread Related Info">
+        <template if:true={recordId}>
+            <div class="slds-p-around_small">
+                <lightning-record-edit-form object-api-name="ChatThread__c" record-id={recordId} onsuccess={handleSuccess} onerror={handleError}>
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-size_1-of-1">
+                            <lightning-input-field field-name="Name"></lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1">
+                            <lightning-input-field field-name="RelatedRecordId__c"></lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1">
+                            <lightning-input-field field-name="RelatedObjectType__c"></lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1">
+                            <lightning-input-field field-name="Description__c"></lightning-input-field>
+                        </div>
+                    </div>
+                    <div class="slds-m-top_small">
+                        <lightning-button type="submit" variant="brand" label="Save"></lightning-button>
+                    </div>
+                </lightning-record-edit-form>
+            </div>
+        </template>
+        <template if:false={recordId}>
+            <div class="slds-p-around_small">Place this on a Chat Thread record page.</div>
+        </template>
+    </lightning-card>
+</template>

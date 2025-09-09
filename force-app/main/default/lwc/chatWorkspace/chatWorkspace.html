@@ -1,0 +1,11 @@
+<template>
+    <div class="slds-grid slds-gutters">
+        <div class="slds-col slds-size_1-of-3">
+            <c-chat-thread-list onthreadselect={handleThreadSelect}></c-chat-thread-list>
+        </div>
+        <div class="slds-col slds-size_2-of-3">
+            <c-chat-message-panel thread-id={threadId}></c-chat-message-panel>
+        </div>
+    </div>
+</template>
+

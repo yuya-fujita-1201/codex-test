@@ -1,0 +1,38 @@
+<template>
+    <lightning-card title="Messages">
+        <template if:true={threadId}>
+            <div class="slds-p-around_small messages">
+                <template if:true={messages}>
+                    <template for:each={messages} for:item="m">
+                        <div key={m.Id} class="msg slds-p-vertical_x-small slds-grid slds-grid_align-spread">
+                            <div>
+                                <div class="body">{m.Body__c}</div>
+                                <div class="meta">
+                                    <template if:true={m.PostedBy__r}>{m.PostedBy__r.Name} · </template>{m.PostedAt__c}
+                                </div>
+                            </div>
+                            <div>
+                                <template if:true={isSynced(m)}>
+                                    <lightning-icon icon-name="utility:success" variant="success" size="x-small" title="Synced"></lightning-icon>
+                                </template>
+                                <template if:true={isPending(m)}>
+                                    <lightning-icon icon-name="utility:spinner" size="x-small" title="Pending"></lightning-icon>
+                                </template>
+                                <template if:true={isFailed(m)}>
+                                    <lightning-icon icon-name="utility:warning" variant="error" size="x-small" title={m.ErrorMessage__c}></lightning-icon>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </template>
+            </div>
+            <div class="slds-p-around_small composer">
+                <lightning-textarea label="Message" value={newBody} maxlength="1000" onchange={handleBodyChange}></lightning-textarea>
+                <lightning-button class="slds-m-top_x-small" label="Send" variant="brand" onclick={send} disabled={disableSend}></lightning-button>
+            </div>
+        </template>
+        <template if:false={threadId}>
+            <div class="slds-p-around_small">Select or create a thread.</div>
+        </template>
+    </lightning-card>
+</template>
