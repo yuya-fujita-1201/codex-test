@@ -23,7 +23,14 @@
   margin-bottom: 0.25rem;
 }
 .post__author { font-weight: 600; }
-.post__body { white-space: pre-wrap; }
+.post__body {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere; /* modern browsers */
+  word-wrap: break-word;   /* legacy fallback */
+  word-break: break-word;  /* ensure long tokens wrap */
+}
+
+.post__more { text-align: right; }
 
 .comment { margin-top: 0.5rem; }
 

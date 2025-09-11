@@ -10,11 +10,40 @@ public with sharing class ChatMessageController {
         ];
     }
 
+    // For record-specific view: filter by related record
+    @AuraEnabled(cacheable=true)
+    public static List<ChatThread__c> getRecentThreadsForRecord(Id recordId, Integer limitSize) {
+        if (recordId == null) return getRecentThreads(limitSize);
+        Integer lim = (limitSize == null || limitSize <= 0) ? 20 : limitSize;
+        return [
+            SELECT Id, Name, Description__c, ExternalThreadId__c, Status__c, CreatedDate, RelatedRecordId__c, RelatedObjectType__c
+            FROM ChatThread__c
+            WHERE RelatedRecordId__c = :recordId
+            ORDER BY CreatedDate DESC
+            LIMIT :lim
+        ];
+    }
+
     @AuraEnabled
     public static Id createThread(String title) {
         if (String.isBlank(title)) throw new AuraHandledException('タイトルは必須です');
         if (title.length() > 80) throw new AuraHandledException('タイトルは80文字以内で入力してください');
         ChatThread__c t = new ChatThread__c(Name = title, Status__c = 'Active');
+        insert t;
+        return t.Id;
+    }
+
+    // Create a thread associated to a record (record page usage)
+    @AuraEnabled
+    public static Id createThreadForRecord(String title, Id recordId, String objectApiName) {
+        if (String.isBlank(title)) throw new AuraHandledException('タイトルは必須です');
+        if (title.length() > 80) throw new AuraHandledException('タイトルは80文字以内で入力してください');
+        ChatThread__c t = new ChatThread__c(
+            Name = title,
+            Status__c = 'Active',
+            RelatedRecordId__c = recordId,
+            RelatedObjectType__c = objectApiName
+        );
         insert t;
         return t.Id;
     }
@@ -71,6 +100,10 @@ public with sharing class ChatMessageController {
         if (threadId == null) throw new AuraHandledException('スレッドが選択されていません');
         if (String.isBlank(body)) throw new AuraHandledException('メッセージ本文は必須です');
         if (body.length() > 1000) throw new AuraHandledException('本文は1000文字以内で入力してください');
+        // Server-side validation: block posting to Closed threads
+        ChatThread__c th = [SELECT Id, Status__c FROM ChatThread__c WHERE Id = :threadId LIMIT 1];
+        if (th == null) throw new AuraHandledException('スレッドが見つかりません');
+        if (th.Status__c == 'Closed') throw new AuraHandledException('このスレッドはクローズされています。返信できません');
         ChatMessage__c m = new ChatMessage__c(
             Thread__c = threadId,
             Body__c = body,

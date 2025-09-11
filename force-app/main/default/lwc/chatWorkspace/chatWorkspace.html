@@ -1,7 +1,8 @@
 <template>
-    <lightning-card title="チャット" icon-name="utility:chat">
+    <lightning-card title={cardTitle} icon-name="utility:chat">
         <div class="slds-p-around_small composer">
             <lightning-input
+                data-name="title"
                 label="スレッドを開始する"
                 placeholder="タイトルを入力"
                 maxlength="80"
@@ -10,6 +11,7 @@
             ></lightning-input>
             <lightning-textarea
                 class="slds-m-top_x-small"
+                data-name="firstComment"
                 label="最初のコメント"
                 placeholder="最初のコメントを入力"
                 maxlength="1000"
@@ -43,7 +45,12 @@
                                                 </span>
                                                 <span class="post__time">{m.PostedAt__c}</span>
                                             </div>
-                                            <div class="post__body">{m.Body__c}</div>
+                                            <div class="post__body">{m.displayBody}</div>
+                                            <template if:true={m.canExpand}>
+                                                <div class="post__more slds-m-top_xx-small">
+                                                    <button class="slds-button slds-button_reset slds-text-link" data-thread-id={t.Id} data-id={m.Id} onclick={toggleExpand}>{m.expandLabel}</button>
+                                                </div>
+                                            </template>
                                         </div>
                                     </template>
                                     </div>
@@ -52,11 +59,15 @@
                                     <div class="slds-p-vertical_small slds-text-color_weak">開いて読み込み中...</div>
                                 </template>
                                 <div class="comment">
+                                    <template if:true={t.isClosed}>
+                                        <div class="slds-text-color_weak slds-m-bottom_x-small">このスレッドはクローズされています。返信できません。</div>
+                                    </template>
                                     <lightning-textarea
                                         data-id={t.Id}
                                         label="コメントを記入する"
                                         placeholder="コメントを記入する"
                                         maxlength="1000"
+                                        disabled={t.isClosed}
                                         value={t.newComment}
                                         onchange={handleCommentChange}
                                     ></lightning-textarea>
@@ -66,7 +77,7 @@
                                         data-id={t.Id}
                                         label="コメントする"
                                         variant="brand"
-                                        disabled={t.disableComment}
+                                        disabled={t.uiDisableComment}
                                         onclick={confirmAndPostComment}
                                     ></lightning-button>
                                 </div>

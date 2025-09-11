@@ -1,24 +1,61 @@
-import { LightningElement, track } from 'lwc';
+import { LightningElement, track, api, wire } from 'lwc';
 import getRecentThreads from '@salesforce/apex/ChatMessageController.getRecentThreads';
+import getRecentThreadsForRecord from '@salesforce/apex/ChatMessageController.getRecentThreadsForRecord';
 import getMessages from '@salesforce/apex/ChatMessageController.getMessages';
 import getMessagesPage from '@salesforce/apex/ChatMessageController.getMessagesPage';
 import createThreadApex from '@salesforce/apex/ChatMessageController.createThread';
+import createThreadForRecord from '@salesforce/apex/ChatMessageController.createThreadForRecord';
 import postMessage from '@salesforce/apex/ChatMessageController.postMessage';
 import LightningConfirm from 'lightning/confirm';
+import { getObjectInfo } from 'lightning/uiObjectInfoApi';
 
 export default class ChatWorkspace extends LightningElement {
     @track threads = [];
+    _recordId;
+    _objectApiName;
+    @track objectLabel;
+    @api
+    get recordId() { return this._recordId; }
+    set recordId(v) {
+        if (this._recordId !== v) {
+            this._recordId = v;
+            // refresh when context changes
+            if (this._initialized) this.refreshAll();
+        }
+    }
+    @api
+    get objectApiName() { return this._objectApiName; }
+    set objectApiName(v) {
+        if (this._objectApiName !== v) {
+            this._objectApiName = v;
+        }
+    }
     newThreadTitle = '';
     firstComment = '';
     firstCommentCount = 0;
     openSectionNames = [];
 
     connectedCallback() {
+        this._initialized = true;
         this.refreshAll();
     }
 
+    @wire(getObjectInfo, { objectApiName: '$_objectApiName' })
+    wiredObjInfo({ data }) {
+        if (data) this.objectLabel = data.label;
+    }
+
+    get cardTitle() {
+        return this.objectLabel ? `${this.objectLabel} チャット` : 'チャット';
+    }
+
     async refreshAll() {
-        const threads = await getRecentThreads({ limitSize: 25 });
+        let threads;
+        if (this._recordId) {
+            threads = await getRecentThreadsForRecord({ recordId: this._recordId, limitSize: 25 });
+        } else {
+            threads = await getRecentThreads({ limitSize: 25 });
+        }
         // Do not load messages now; lazy-load on expand
         this.threads = threads.map((t) => ({
             ...t,
@@ -29,19 +66,46 @@ export default class ChatWorkspace extends LightningElement {
             oldestLoadedDate: null,
             newComment: '',
             commentCount: 0,
-            disableComment: true
+            isClosed: t.Status__c === 'Closed',
+            disableComment: true,
+            uiDisableComment: true
         }));
-        this.openSectionNames = [];
+        // auto-open latest 3 threads
+        this.openSectionNames = this.getDefaultOpenIds();
+        await this.setOpenSections(this.openSectionNames);
+    }
+
+    getDefaultOpenIds() {
+        return (this.threads || []).slice(0, 1).map((t) => t.Id);
+    }
+
+    decorateMessages(list) {
+        const truncate = (s, expanded) => {
+            if (!s) return '';
+            if (expanded || s.length <= 255) return s;
+            return s.substring(0, 255) + '…';
+        };
+        return (list || []).map((m) => ({
+            ...m,
+            expanded: false,
+            canExpand: (m.Body__c || '').length > 255,
+            displayBody: truncate(m.Body__c, false),
+            expandLabel: 'もっと見る'
+        }));
     }
 
     // New thread creation
     handleTitleChange(e) {
         this.newThreadTitle = e.detail.value;
+        const el = this.template.querySelector('lightning-input[data-name="title"]');
+        if (el) { el.setCustomValidity(''); el.reportValidity(); }
     }
 
     handleFirstCommentChange(e) {
         this.firstComment = e.detail.value;
         this.firstCommentCount = (this.firstComment || '').length;
+        const el = this.template.querySelector('lightning-textarea[data-name="firstComment"]');
+        if (el) { el.setCustomValidity(''); el.reportValidity(); }
     }
 
     get disableCreate() {
@@ -62,14 +126,19 @@ export default class ChatWorkspace extends LightningElement {
             });
             if (!ok) return;
 
-            const id = await createThreadApex({ title });
+            const id = this._recordId
+                ? await createThreadForRecord({ title, recordId: this._recordId, objectApiName: this._objectApiName })
+                : await createThreadApex({ title });
             await postMessage({ threadId: id, body });
             // Clear inputs
             this.newThreadTitle = '';
             this.firstComment = '';
             this.firstCommentCount = 0;
+            this.clearComposerErrors();
             // Load first page to show the posted comment
-            const msgs = await getMessagesPage({ threadId: id, pageSize: 20, beforeCreatedDate: null });
+            const msgs = this.decorateMessages(
+                await getMessagesPage({ threadId: id, pageSize: 20, beforeCreatedDate: null })
+            );
             // Prepend new thread and open it
             this.threads = [
                 {
@@ -86,10 +155,23 @@ export default class ChatWorkspace extends LightningElement {
                 },
                 ...this.threads
             ];
-            this.openSectionNames = [id, ...this.openSectionNames];
+            // Keep latest 3 (includes new thread at top)
+            // Ensure the new thread is opened first and de-duplicate
+            const ids = [id].concat(this.openSectionNames || []).filter((v, i, a) => a.indexOf(v) === i);
+            this.openSectionNames = ids;
+            await this.setOpenSections(this.openSectionNames);
+            // In some cases the accordion needs a tick to recognize the new section
+            setTimeout(() => {
+                const acc = this.template.querySelector('lightning-accordion');
+                if (acc) acc.activeSectionName = this.openSectionNames;
+            }, 0);
         } catch (e) {
-            // eslint-disable-next-line no-console
-            console.error(e);
+            const msg = this.normalizeError(e);
+            if (msg && msg.indexOf('タイトル') >= 0) {
+                this.setComposerFieldError('title', msg);
+            } else {
+                this.setComposerFieldError('firstComment', msg);
+            }
         }
     }
 
@@ -97,17 +179,24 @@ export default class ChatWorkspace extends LightningElement {
     handleCommentChange(e) {
         const id = e.currentTarget.dataset.id;
         const value = e.detail.value || '';
+        const target = this.threads.find((t) => t.Id === id);
+        if (target && target.isClosed) {
+            return; // Closed threads cannot be edited
+        }
         this.threads = this.threads.map((t) =>
             t.Id === id
-                ? { ...t, newComment: value, commentCount: (value || '').length, disableComment: value.trim().length === 0 }
+                ? { ...t, newComment: value, commentCount: (value || '').length, disableComment: value.trim().length === 0, uiDisableComment: value.trim().length === 0 || !!t.isClosed }
                 : t
         );
+        // clear field error while typing
+        const el = this.template.querySelector(`lightning-textarea[data-id="${id}"]`);
+        if (el) { el.setCustomValidity(''); el.reportValidity(); }
     }
 
     async confirmAndPostComment(e) {
         const id = e.currentTarget.dataset.id;
         const th = this.threads.find((t) => t.Id === id);
-        if (!th || !th.newComment || th.newComment.trim().length === 0) return;
+        if (!th || th.isClosed || !th.newComment || th.newComment.trim().length === 0) return;
 
         const result = await LightningConfirm.open({
             message: 'コメントを投稿します。よろしいですか？',
@@ -119,7 +208,9 @@ export default class ChatWorkspace extends LightningElement {
         try {
             await postMessage({ threadId: id, body: th.newComment });
             // Clear input and refresh messages for this thread
-            const msgs = await getMessages({ threadId: id, limitSize: 100 });
+            const msgs = this.decorateMessages(
+                await getMessages({ threadId: id, limitSize: 100 })
+            );
             this.threads = this.threads.map((t) =>
                 t.Id === id
                     ? {
@@ -129,30 +220,36 @@ export default class ChatWorkspace extends LightningElement {
                           newComment: '',
                           commentCount: 0,
                           disableComment: true,
+                          uiDisableComment: true,
                           oldestLoadedDate: (msgs && msgs.length ? msgs[0].CreatedDate : t.oldestLoadedDate)
                       }
                     : t
             );
         } catch (err) {
-            // eslint-disable-next-line no-console
-            console.error(err);
+            const msg = this.normalizeError(err);
+            const el = this.template.querySelector(`lightning-textarea[data-id="${id}"]`);
+            if (el) { el.setCustomValidity(msg || '投稿に失敗しました'); el.reportValidity(); }
         }
     }
 
     async handleToggle(e) {
         const open = e && e.detail && e.detail.openSections;
         const ids = Array.isArray(open) ? open : (open ? [open] : []);
-        this.openSectionNames = ids;
+        await this.setOpenSections(ids);
+    }
+
+    async setOpenSections(ids) {
+        this.openSectionNames = ids || [];
 
         // Determine which sections need loading (and clear closed sections)
-        const toLoad = ids.filter((id) => {
+        const toLoad = this.openSectionNames.filter((id) => {
             const t = this.threads.find((x) => x.Id === id);
             return t && !t.messagesLoaded;
         });
 
         // Clear messages for closed sections to save memory
         this.threads = this.threads.map((t) =>
-            ids.includes(t.Id)
+            this.openSectionNames.includes(t.Id)
                 ? t
                 : { ...t, messages: [], messagesLoaded: false, hasMore: true, oldestLoadedDate: null }
         );
@@ -163,7 +260,9 @@ export default class ChatWorkspace extends LightningElement {
         await Promise.all(
             toLoad.map(async (id) => {
                 try {
-                    const msgs = await getMessagesPage({ threadId: id, pageSize: 20, beforeCreatedDate: null });
+                    const msgs = this.decorateMessages(
+                        await getMessagesPage({ threadId: id, pageSize: 20, beforeCreatedDate: null })
+                    );
                     this.threads = this.threads.map((t) =>
                         t.Id === id
                             ? {
@@ -192,7 +291,9 @@ export default class ChatWorkspace extends LightningElement {
 
         this.threads = this.threads.map((x) => (x.Id === id ? { ...x, loading: true } : x));
         try {
-            const msgs = await getMessagesPage({ threadId: id, pageSize: 20, beforeCreatedDate: t.oldestLoadedDate });
+            const msgs = this.decorateMessages(
+                await getMessagesPage({ threadId: id, pageSize: 20, beforeCreatedDate: t.oldestLoadedDate })
+            );
             const combined = msgs.concat(t.messages || []);
             this.threads = this.threads.map((x) =>
                 x.Id === id
@@ -210,5 +311,55 @@ export default class ChatWorkspace extends LightningElement {
             console.error(err);
             this.threads = this.threads.map((x) => (x.Id === id ? { ...x, loading: false } : x));
         }
+    }
+
+    toggleExpand(e) {
+        const threadId = e.currentTarget.dataset.threadId;
+        const msgId = e.currentTarget.dataset.id;
+        const update = (m) => {
+            const expanded = !m.expanded;
+            const full = m.Body__c || '';
+            return {
+                ...m,
+                expanded,
+                displayBody: expanded ? full : (full.length > 255 ? full.substring(0, 255) + '…' : full),
+                expandLabel: expanded ? '閉じる' : 'もっと見る'
+            };
+        };
+        this.threads = this.threads.map((t) =>
+            t.Id === threadId
+                ? { ...t, messages: (t.messages || []).map((m) => (m.Id === msgId ? update(m) : m)) }
+                : t
+        );
+    }
+
+    // Error helpers
+    normalizeError(err) {
+        try {
+            if (err && err.body && typeof err.body.message === 'string') return err.body.message;
+            if (Array.isArray(err && err.body)) return err.body.map((x) => x.message).join(', ');
+            if (typeof err === 'string') return err;
+            if (err && err.message) return err.message;
+        } catch (ignore) {}
+        return 'エラーが発生しました';
+    }
+
+    setComposerFieldError(fieldName, message) {
+        const el = this.template.querySelector(
+            fieldName === 'title' ? 'lightning-input[data-name="title"]' : 'lightning-textarea[data-name="firstComment"]'
+        );
+        if (el) {
+            el.setCustomValidity(message || 'エラーが発生しました');
+            el.reportValidity();
+        }
+    }
+
+    clearComposerErrors() {
+        ['title', 'firstComment'].forEach((f) => {
+            const el = this.template.querySelector(
+                f === 'title' ? 'lightning-input[data-name="title"]' : 'lightning-textarea[data-name="firstComment"]'
+            );
+            if (el) { el.setCustomValidity(''); el.reportValidity(); }
+        });
     }
 }
