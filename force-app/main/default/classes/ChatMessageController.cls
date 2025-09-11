@@ -32,6 +32,40 @@ public with sharing class ChatMessageController {
         ];
     }
 
+    // Pagination for latest-first loading then return ascending for UI
+    @AuraEnabled(cacheable=true)
+    public static List<ChatMessage__c> getMessagesPage(Id threadId, Integer pageSize, Datetime beforeCreatedDate) {
+        if (threadId == null) return new List<ChatMessage__c>();
+        Integer lim = (pageSize == null || pageSize <= 0) ? 20 : pageSize;
+        if (beforeCreatedDate == null) {
+            List<ChatMessage__c> r = [
+                SELECT Id, Body__c, PostedAt__c, PostedBy__c, PostedBy__r.Name, SyncStatus__c, ErrorMessage__c, ExternalMessageId__c, CreatedDate
+                FROM ChatMessage__c
+                WHERE Thread__c = :threadId
+                ORDER BY CreatedDate DESC
+                LIMIT :lim
+            ];
+            return reverseList(r);
+        } else {
+            List<ChatMessage__c> r = [
+                SELECT Id, Body__c, PostedAt__c, PostedBy__c, PostedBy__r.Name, SyncStatus__c, ErrorMessage__c, ExternalMessageId__c, CreatedDate
+                FROM ChatMessage__c
+                WHERE Thread__c = :threadId AND CreatedDate < :beforeCreatedDate
+                ORDER BY CreatedDate DESC
+                LIMIT :lim
+            ];
+            return reverseList(r);
+        }
+    }
+
+    private static List<ChatMessage__c> reverseList(List<ChatMessage__c> input) {
+        List<ChatMessage__c> outp = new List<ChatMessage__c>();
+        for (Integer i = input.size() - 1; i >= 0; i--) {
+            outp.add(input[i]);
+        }
+        return outp;
+    }
+
     @AuraEnabled
     public static Id postMessage(Id threadId, String body) {
         if (threadId == null) throw new AuraHandledException('スレッドが選択されていません');

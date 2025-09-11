@@ -6,20 +6,85 @@
             </div>
             <div class="slds-media__body">
                 <h1 class="slds-page-header__title slds-truncate" title="チャット ワークスペース">チャット ワークスペース</h1>
-                <p class="slds-page-header__meta slds-truncate" title={threadName}>
-                    <template if:true={threadName}>選択中: {threadName}</template>
-                    <template if:false={threadName}>スレッドを選択または作成してください</template>
-                </p>
+                <p class="slds-page-header__meta slds-truncate">スレッドの作成とコメント投稿</p>
             </div>
         </div>
     </div>
 
-    <div class="slds-grid slds-gutters">
-        <div class="slds-col slds-size_1-of-3">
-            <c-chat-thread-list onthreadselect={handleThreadSelect}></c-chat-thread-list>
+    <lightning-card title="メッセージコンポーネント">
+        <div class="slds-p-around_small composer">
+            <lightning-input
+                label="スレッドを開始する"
+                placeholder="タイトルを入力"
+                maxlength="80"
+                value={newThreadTitle}
+                onchange={handleTitleChange}
+            ></lightning-input>
+            <lightning-textarea
+                class="slds-m-top_x-small"
+                label="最初のコメント"
+                placeholder="最初のコメントを入力"
+                maxlength="1000"
+                value={firstComment}
+                onchange={handleFirstCommentChange}
+            ></lightning-textarea>
+            <lightning-button
+                class="slds-m-top_x-small"
+                label="投稿"
+                variant="brand"
+                disabled={disableCreate}
+                onclick={createThread}
+            ></lightning-button>
         </div>
-        <div class="slds-col slds-size_2-of-3">
-            <c-chat-message-panel thread-id={threadId}></c-chat-message-panel>
+
+        <div class="slds-p-horizontal_small">
+            <template if:true={threads}>
+                <lightning-accordion allow-multiple-sections-open onsectiontoggle={handleToggle} active-section-name={openSectionNames}>
+                    <template for:each={threads} for:item="t">
+                        <lightning-accordion-section key={t.Id} name={t.Id} label={t.Name}>
+                            <div class="thread">
+                                <template if:true={t.messagesLoaded}>
+                                    <div class="messages-box" data-id={t.Id} onscroll={handleScrollMessages}>
+                                    <template for:each={t.messages} for:item="m">
+                                        <div key={m.Id} class="post">
+                                            <div class="post__header">
+                                                <span class="post__author">
+                                                    <template if:true={m.PostedBy__r}>{m.PostedBy__r.Name}</template>
+                                                    <template if:false={m.PostedBy__r}>不明な投稿者</template>
+                                                </span>
+                                                <span class="post__time">{m.PostedAt__c}</span>
+                                            </div>
+                                            <div class="post__body">{m.Body__c}</div>
+                                        </div>
+                                    </template>
+                                    </div>
+                                </template>
+                                <template if:false={t.messagesLoaded}>
+                                    <div class="slds-p-vertical_small slds-text-color_weak">開いて読み込み中...</div>
+                                </template>
+                                <div class="comment">
+                                    <lightning-textarea
+                                        data-id={t.Id}
+                                        label="コメントを記入する"
+                                        placeholder="コメントを記入する"
+                                        maxlength="1000"
+                                        value={t.newComment}
+                                        onchange={handleCommentChange}
+                                    ></lightning-textarea>
+                                    <lightning-button
+                                        class="slds-m-top_x-small"
+                                        data-id={t.Id}
+                                        label="コメントする"
+                                        variant="brand"
+                                        disabled={t.disableComment}
+                                        onclick={confirmAndPostComment}
+                                    ></lightning-button>
+                                </div>
+                            </div>
+                        </lightning-accordion-section>
+                    </template>
+                </lightning-accordion>
+            </template>
         </div>
-    </div>
+    </lightning-card>
 </template>
