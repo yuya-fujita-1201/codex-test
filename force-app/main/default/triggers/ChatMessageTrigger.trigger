@@ -17,5 +17,6 @@ trigger ChatMessageTrigger on ChatMessage__c (after insert, after update) {
         }
     }
     if (!toUpdate.isEmpty()) update toUpdate;
-    if (!toPublish.isEmpty()) ChatEventBus.publishMessageOut(toPublish);
+    // Controller側で同期連携するケースでは skipOutbound = true にしているため、その場合はPE発行を抑止
+    if (!toPublish.isEmpty() && !ChatMessageTrigger_RecursionGuard.skipOutbound) ChatEventBus.publishMessageOut(toPublish);
 }

@@ -104,6 +104,8 @@ public with sharing class ChatMessageController {
         ChatThread__c th = [SELECT Id, Status__c FROM ChatThread__c WHERE Id = :threadId LIMIT 1];
         if (th == null) throw new AuraHandledException('スレッドが見つかりません');
         if (th.Status__c == 'Closed') throw new AuraHandledException('このスレッドはクローズされています。返信できません');
+        // 投稿と外部連携を同一リクエスト内で実施
+        // トリガによるPE発行・Queueableは抑止する（重複送信防止）
         ChatMessage__c m = new ChatMessage__c(
             Thread__c = threadId,
             Body__c = body,
@@ -111,7 +113,17 @@ public with sharing class ChatMessageController {
             PostedBy__c = UserInfo.getUserId(),
             SyncStatus__c = 'Pending'
         );
-        insert m;
+        Boolean oldSkip = ChatMessageTrigger_RecursionGuard.skipOutbound;
+        ChatMessageTrigger_RecursionGuard.skipOutbound = true;
+        try {
+            insert m;
+        } finally {
+            ChatMessageTrigger_RecursionGuard.skipOutbound = oldSkip;
+        }
+
+        // 同期で外部APIへ連携（Named Credential: External_Chat）
+        // 注意：本処理は仮APIに合わせており、将来変更時は ChatOutboundService のマッピングを更新
+        ChatOutboundService.processMessage(m.Id);
         return m.Id;
     }
 }
