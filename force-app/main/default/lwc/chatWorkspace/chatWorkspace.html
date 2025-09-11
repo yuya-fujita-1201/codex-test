@@ -43,7 +43,20 @@
                                                     <template if:true={m.PostedBy__r}>{m.PostedBy__r.Name}</template>
                                                     <template if:false={m.PostedBy__r}>不明な投稿者</template>
                                                 </span>
-                                                <span class="post__time">{m.PostedAt__c}</span>
+                                                <span class="post__time">
+                                                    {m.PostedAt__c}
+                                                    <span class="post__icons">
+                                                        <template if:true={m.isSynced}>
+                                                            <lightning-icon icon-name="utility:success" variant="success" size="x-small" title="同期済み"></lightning-icon>
+                                                        </template>
+                                                        <template if:true={m.isPending}>
+                                                            <lightning-icon icon-name="utility:sync" size="x-small" title="連携保留"></lightning-icon>
+                                                        </template>
+                                                        <template if:true={m.isFailed}>
+                                                            <lightning-icon icon-name="utility:warning" variant="error" size="x-small" title={m.statusTitle}></lightning-icon>
+                                                        </template>
+                                                    </span>
+                                                </span>
                                             </div>
                                             <div class="post__body">{m.displayBody}</div>
                                             <template if:true={m.canExpand}>

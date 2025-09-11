@@ -104,26 +104,28 @@ public with sharing class ChatMessageController {
         ChatThread__c th = [SELECT Id, Status__c FROM ChatThread__c WHERE Id = :threadId LIMIT 1];
         if (th == null) throw new AuraHandledException('スレッドが見つかりません');
         if (th.Status__c == 'Closed') throw new AuraHandledException('このスレッドはクローズされています。返信できません');
-        // 投稿と外部連携を同一リクエスト内で実施
-        // トリガによるPE発行・Queueableは抑止する（重複送信防止）
+        // 1) コールアウト先行で外部へ送信
+        ChatOutboundService.Result r = ChatOutboundService.callExternalForThread(threadId, body);
+
+        // 2) 結果に応じてメッセージを作成
         ChatMessage__c m = new ChatMessage__c(
             Thread__c = threadId,
             Body__c = body,
             PostedAt__c = Datetime.now(),
             PostedBy__c = UserInfo.getUserId(),
-            SyncStatus__c = 'Pending'
+            SyncStatus__c = (r.ok ? 'Synced' : 'Failed'),
+            ExternalMessageId__c = r.externalMessageId,
+            ErrorMessage__c = (r.ok ? null : r.errorMessage)
         );
-        Boolean oldSkip = ChatMessageTrigger_RecursionGuard.skipOutbound;
-        ChatMessageTrigger_RecursionGuard.skipOutbound = true;
-        try {
-            insert m;
-        } finally {
-            ChatMessageTrigger_RecursionGuard.skipOutbound = oldSkip;
+        insert m;
+
+        // 3) スレッドの外部IDも更新（返ってきた場合）
+        if (r.externalThreadId != null) {
+            try { update new ChatThread__c(Id = threadId, ExternalThreadId__c = r.externalThreadId); } catch (Exception ignore) {}
         }
 
-        // 同期で外部APIへ連携（Named Credential: External_Chat）
-        // 注意：本処理は仮APIに合わせており、将来変更時は ChatOutboundService のマッピングを更新
-        ChatOutboundService.processMessage(m.Id);
+        // 4) 外部エラーでもユーザ操作は継続させる（UIではエラーを出さない）
+        //    失敗内容は ChatMessage__c.ErrorMessage__c として記録済み
         return m.Id;
     }
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+  <types>
+    <members>ChatMessageOutTrigger</members>
+    <members>ChatMessageInTrigger</members>
+    <members>ChatSyncAckTrigger</members>
+    <name>ApexTrigger</name>
+  </types>
+  <types>
+    <members>ChatEventBus</members>
+    <members>ChatOutboundQueueable</members>
+    <members>ChatOutboundQueueableTest</members>
+    <members>ChatPlatformEventsTriggerTest</members>
+    <name>ApexClass</name>
+  </types>
+  <types>
+    <members>chatMessagePanel</members>
+    <members>chatThreadList</members>
+    <name>LightningComponentBundle</name>
+  </types>
+  <version>59.0</version>
+</Package>
+

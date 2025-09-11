@@ -85,13 +85,26 @@ export default class ChatWorkspace extends LightningElement {
             if (expanded || s.length <= 255) return s;
             return s.substring(0, 255) + '…';
         };
-        return (list || []).map((m) => ({
-            ...m,
-            expanded: false,
-            canExpand: (m.Body__c || '').length > 255,
-            displayBody: truncate(m.Body__c, false),
-            expandLabel: 'もっと見る'
-        }));
+        return (list || []).map((m) => {
+            const s = m.SyncStatus__c;
+            const isSynced = s === 'Synced';
+            const isPending = s === 'Pending';
+            const isFailed = s === 'Failed';
+            const statusTitle = isFailed
+                ? (m.ErrorMessage__c || '連携失敗')
+                : (isSynced ? '同期済み' : (isPending ? '連携保留' : s));
+            return {
+                ...m,
+                expanded: false,
+                canExpand: (m.Body__c || '').length > 255,
+                displayBody: truncate(m.Body__c, false),
+                expandLabel: 'もっと見る',
+                isSynced,
+                isPending,
+                isFailed,
+                statusTitle
+            };
+        });
     }
 
     // New thread creation
