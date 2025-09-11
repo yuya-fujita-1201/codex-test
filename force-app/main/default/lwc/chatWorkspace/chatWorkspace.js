@@ -10,6 +10,7 @@ export default class ChatWorkspace extends LightningElement {
     @track threads = [];
     newThreadTitle = '';
     firstComment = '';
+    firstCommentCount = 0;
     openSectionNames = [];
 
     connectedCallback() {
@@ -27,6 +28,7 @@ export default class ChatWorkspace extends LightningElement {
             hasMore: true,
             oldestLoadedDate: null,
             newComment: '',
+            commentCount: 0,
             disableComment: true
         }));
         this.openSectionNames = [];
@@ -39,6 +41,7 @@ export default class ChatWorkspace extends LightningElement {
 
     handleFirstCommentChange(e) {
         this.firstComment = e.detail.value;
+        this.firstCommentCount = (this.firstComment || '').length;
     }
 
     get disableCreate() {
@@ -64,6 +67,7 @@ export default class ChatWorkspace extends LightningElement {
             // Clear inputs
             this.newThreadTitle = '';
             this.firstComment = '';
+            this.firstCommentCount = 0;
             // Load first page to show the posted comment
             const msgs = await getMessagesPage({ threadId: id, pageSize: 20, beforeCreatedDate: null });
             // Prepend new thread and open it
@@ -77,6 +81,7 @@ export default class ChatWorkspace extends LightningElement {
                     hasMore: msgs.length === 20,
                     oldestLoadedDate: msgs.length ? msgs[0].CreatedDate : null,
                     newComment: '',
+                    commentCount: 0,
                     disableComment: true
                 },
                 ...this.threads
@@ -93,7 +98,9 @@ export default class ChatWorkspace extends LightningElement {
         const id = e.currentTarget.dataset.id;
         const value = e.detail.value || '';
         this.threads = this.threads.map((t) =>
-            t.Id === id ? { ...t, newComment: value, disableComment: value.trim().length === 0 } : t
+            t.Id === id
+                ? { ...t, newComment: value, commentCount: (value || '').length, disableComment: value.trim().length === 0 }
+                : t
         );
     }
 
@@ -114,7 +121,17 @@ export default class ChatWorkspace extends LightningElement {
             // Clear input and refresh messages for this thread
             const msgs = await getMessages({ threadId: id, limitSize: 100 });
             this.threads = this.threads.map((t) =>
-                t.Id === id ? { ...t, messages: msgs, messagesLoaded: true, newComment: '', disableComment: true, oldestLoadedDate: (msgs && msgs.length ? msgs[0].CreatedDate : t.oldestLoadedDate) } : t
+                t.Id === id
+                    ? {
+                          ...t,
+                          messages: msgs,
+                          messagesLoaded: true,
+                          newComment: '',
+                          commentCount: 0,
+                          disableComment: true,
+                          oldestLoadedDate: (msgs && msgs.length ? msgs[0].CreatedDate : t.oldestLoadedDate)
+                      }
+                    : t
             );
         } catch (err) {
             // eslint-disable-next-line no-console
