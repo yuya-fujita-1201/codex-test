@@ -14,7 +14,7 @@ public with sharing class ChatOutboundService implements Database.AllowsCallouts
         Result r = new Result();
 
         ChatThread__c th = [
-            SELECT Id, Name, Description__c, RelatedObjectType__c, RelatedRecordId__c
+            SELECT Id, Name, RelatedObjectType__c, RelatedRecordId__c
             FROM ChatThread__c WHERE Id = :threadId LIMIT 1
         ];
         User u = [SELECT Id, Name FROM User WHERE Id = :UserInfo.getUserId() LIMIT 1];
@@ -32,7 +32,6 @@ public with sharing class ChatOutboundService implements Database.AllowsCallouts
             'salesforceRecordId'   => relatedId,
             'salesforceObjectType' => th.RelatedObjectType__c,
             'threadTitle'          => th.Name,
-            'threadDescription'    => th.Description__c,
             'senderName'           => u != null ? u.Name : null,
             'senderId'             => UserInfo.getUserId(),
             // 追加送信: SF側のThreadを明示（外部が将来採用する場合に備えた補助キー）
@@ -79,7 +78,7 @@ public with sharing class ChatOutboundService implements Database.AllowsCallouts
         ChatMessage__c m = [
             SELECT Id, Body__c, PostedBy__c, PostedBy__r.Name, Thread__c,
                    SyncStatus__c,
-                   Thread__r.Name, Thread__r.Description__c,
+                   Thread__r.Name,
                    Thread__r.RelatedRecordId__c, Thread__r.RelatedObjectType__c
             FROM ChatMessage__c WHERE Id = :messageId LIMIT 1
         ];
@@ -100,7 +99,6 @@ public with sharing class ChatOutboundService implements Database.AllowsCallouts
             'salesforceRecordId'   => relId,
             'salesforceObjectType' => m.Thread__r.RelatedObjectType__c,
             'threadTitle'          => m.Thread__r.Name,
-            'threadDescription'    => m.Thread__r.Description__c,
             'senderName'           => (m.PostedBy__r != null ? m.PostedBy__r.Name : null),
             'senderId'             => m.PostedBy__c,
             'salesforceThreadId'   => m.Thread__c,
@@ -121,7 +119,6 @@ public with sharing class ChatOutboundService implements Database.AllowsCallouts
             if (res.getStatusCode() >= 200 && res.getStatusCode() < 300) {
                 String resBody = res.getBody();
                 String errorMsg;
-                String externalThreadId;
                 String externalMessageId;
                 try {
                     Map<String, Object> parsed = (Map<String, Object>) JSON.deserializeUntyped(resBody);
@@ -132,7 +129,6 @@ public with sharing class ChatOutboundService implements Database.AllowsCallouts
                         if (parsed.containsKey('data')) {
                             Map<String, Object> data = (Map<String, Object>) parsed.get('data');
                             if (data != null) {
-                                if (data.containsKey('threadId')) externalThreadId = (String) data.get('threadId');
                                 if (data.containsKey('messageId')) externalMessageId = (String) data.get('messageId');
                             }
                         }
@@ -146,9 +142,6 @@ public with sharing class ChatOutboundService implements Database.AllowsCallouts
                     upd.SyncStatus__c = 'Synced';
                     upd.ErrorMessage__c = null;
                     if (externalMessageId != null) upd.ExternalMessageId__c = externalMessageId;
-                    if (externalThreadId != null) {
-                        try { update new ChatThread__c(Id = m.Thread__c, ExternalThreadId__c = externalThreadId); } catch (Exception ignore) {}
-                    }
                 }
             } else {
                 upd.SyncStatus__c = 'Failed';

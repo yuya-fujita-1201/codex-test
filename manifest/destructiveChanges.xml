@@ -14,6 +14,8 @@
   </types>
   <types>
     <members>ChatMessage__c.ReplyTo__c</members>
+    <members>ChatThread__c.Description__c</members>
+    <members>ChatThread__c.ExternalThreadId__c</members>
     <name>CustomField</name>
   </types>
   <types>

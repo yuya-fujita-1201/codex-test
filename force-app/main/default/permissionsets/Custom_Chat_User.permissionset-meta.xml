@@ -8,6 +8,10 @@
         <apexClass>ChatMessageController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
+    <classAccesses>
+        <apexClass>ChatOutboundService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
 
     <!-- Object permissions -->
     <objectPermissions>
@@ -37,17 +41,7 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>ChatThread__c.Description__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
         <field>ChatThread__c.Status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ChatThread__c.ExternalThreadId__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

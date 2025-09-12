@@ -119,11 +119,6 @@ public with sharing class ChatMessageController {
         );
         insert m;
 
-        // 3) スレッドの外部IDも更新（返ってきた場合）
-        if (r.externalThreadId != null) {
-            try { update new ChatThread__c(Id = threadId, ExternalThreadId__c = r.externalThreadId); } catch (Exception ignore) {}
-        }
-
         // 4) 外部エラーでもユーザ操作は継続させる（UIではエラーを出さない）
         //    失敗内容は ChatMessage__c.ErrorMessage__c として記録済み
         return m.Id;

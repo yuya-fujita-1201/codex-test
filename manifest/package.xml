@@ -1,5 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
+  <types>
+    <members>ChatMessageController</members>
+    <members>ChatOutboundService</members>
+    <name>ApexClass</name>
+  </types>
+  <types>
+    <members>ChatMessageTrigger</members>
+    <name>ApexTrigger</name>
+  </types>
+  <types>
+    <members>ChatMessage__c</members>
+    <members>ChatThread__c</members>
+    <name>CustomObject</name>
+  </types>
+  <types>
+    <members>Custom_Chat_User</members>
+    <name>PermissionSet</name>
+  </types>
+  <types>
+    <members>External_Chat</members>
+    <name>NamedCredential</name>
+  </types>
+  <types>
+    <members>Chat_Workspace</members>
+    <name>CustomTab</name>
+  </types>
+  <types>
+    <members>chatWorkspace</members>
+    <name>LightningComponentBundle</name>
+  </types>
   <version>59.0</version>
 </Package>
-
