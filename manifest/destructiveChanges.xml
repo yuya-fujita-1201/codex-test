@@ -7,6 +7,16 @@
     <name>ApexTrigger</name>
   </types>
   <types>
+    <members>ChatMessageOut__e</members>
+    <members>ChatMessageIn__e</members>
+    <members>ChatSyncAck__e</members>
+    <name>CustomObject</name>
+  </types>
+  <types>
+    <members>ChatMessage__c.ReplyTo__c</members>
+    <name>CustomField</name>
+  </types>
+  <types>
     <members>ChatEventBus</members>
     <members>ChatOutboundQueueable</members>
     <members>ChatOutboundQueueableTest</members>
@@ -20,4 +30,3 @@
   </types>
   <version>59.0</version>
 </Package>
-
