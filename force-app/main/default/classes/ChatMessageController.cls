@@ -48,7 +48,9 @@ public with sharing class ChatMessageController {
         return t.Id;
     }
 
-    @AuraEnabled(cacheable=true)
+    // Imperative calls from LWC require fresh data to reflect just-posted records.
+    // Do not mark cacheable to avoid client-side staleness.
+    @AuraEnabled
     public static List<ChatMessage__c> getMessages(Id threadId, Integer limitSize) {
         if (threadId == null) return new List<ChatMessage__c>();
         Integer lim = (limitSize == null || limitSize <= 0) ? 50 : limitSize;
@@ -62,7 +64,7 @@ public with sharing class ChatMessageController {
     }
 
     // Pagination for latest-first loading then return ascending for UI
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static List<ChatMessage__c> getMessagesPage(Id threadId, Integer pageSize, Datetime beforeCreatedDate) {
         if (threadId == null) return new List<ChatMessage__c>();
         Integer lim = (pageSize == null || pageSize <= 0) ? 20 : pageSize;
@@ -104,23 +106,46 @@ public with sharing class ChatMessageController {
         ChatThread__c th = [SELECT Id, Status__c FROM ChatThread__c WHERE Id = :threadId LIMIT 1];
         if (th == null) throw new AuraHandledException('スレッドが見つかりません');
         if (th.Status__c == 'Closed') throw new AuraHandledException('このスレッドはクローズされています。返信できません');
-        // 1) コールアウト先行で外部へ送信
-        ChatOutboundService.Result r = ChatOutboundService.callExternalForThread(threadId, body);
 
-        // 2) 結果に応じてメッセージを作成
+        // Server-side validation: block when the thread has any non-Synced message
+        Integer unsentCount = [SELECT COUNT() FROM ChatMessage__c WHERE Thread__c = :threadId AND SyncStatus__c != 'Synced'];
+        if (unsentCount > 0) {
+            throw new AuraHandledException('未送信または失敗したメッセージがあります。送信または削除してください。');
+        }
+
+        // 外部送信は行わず、メッセージのみ保存（Pending状態）
         ChatMessage__c m = new ChatMessage__c(
             Thread__c = threadId,
             Body__c = body,
             PostedAt__c = Datetime.now(),
             PostedBy__c = UserInfo.getUserId(),
-            SyncStatus__c = (r.ok ? 'Synced' : 'Failed'),
-            ExternalMessageId__c = r.externalMessageId,
-            ErrorMessage__c = (r.ok ? null : r.errorMessage)
+            SyncStatus__c = 'Pending',
+            ExternalMessageId__c = null,
+            ErrorMessage__c = null
         );
         insert m;
 
-        // 4) 外部エラーでもユーザ操作は継続させる（UIではエラーを出さない）
-        //    失敗内容は ChatMessage__c.ErrorMessage__c として記録済み
         return m.Id;
+    }
+
+    // 明示送信用：保存済みメッセージを外部に送信し、結果を返す
+    @AuraEnabled
+    public static ChatMessage__c sendMessage(Id messageId) {
+        if (messageId == null) throw new AuraHandledException('メッセージが選択されていません');
+        // 実送信（結果はレコードに反映される）
+        ChatOutboundService.processMessage(messageId);
+        // 反映後の状態を返却
+        return [
+            SELECT Id, Body__c, PostedAt__c, PostedBy__c, PostedBy__r.Name,
+                   SyncStatus__c, ErrorMessage__c, ExternalMessageId__c, CreatedDate, Thread__c
+            FROM ChatMessage__c WHERE Id = :messageId LIMIT 1
+        ];
+    }
+
+    // 削除機能：任意メッセージを削除
+    @AuraEnabled
+    public static void deleteMessage(Id messageId) {
+        if (messageId == null) return;
+        delete [SELECT Id FROM ChatMessage__c WHERE Id = :messageId LIMIT 1];
     }
 }

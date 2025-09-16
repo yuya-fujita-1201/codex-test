@@ -6,6 +6,8 @@ import getMessagesPage from '@salesforce/apex/ChatMessageController.getMessagesP
 import createThreadApex from '@salesforce/apex/ChatMessageController.createThread';
 import createThreadForRecord from '@salesforce/apex/ChatMessageController.createThreadForRecord';
 import postMessage from '@salesforce/apex/ChatMessageController.postMessage';
+import sendMessageApex from '@salesforce/apex/ChatMessageController.sendMessage';
+import deleteMessageApex from '@salesforce/apex/ChatMessageController.deleteMessage';
 import LightningConfirm from 'lightning/confirm';
 import { getObjectInfo } from 'lightning/uiObjectInfoApi';
 
@@ -85,6 +87,25 @@ export default class ChatWorkspace extends LightningElement {
             if (expanded || s.length <= 255) return s;
             return s.substring(0, 255) + '…';
         };
+        const formatJst = (iso) => {
+            if (!iso) return '';
+            try {
+                const d = new Date(iso);
+                const parts = new Intl.DateTimeFormat('en-US', {
+                    timeZone: 'Asia/Tokyo',
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit', second: '2-digit',
+                    hour12: false
+                }).formatToParts(d).reduce((acc, p) => { acc[p.type] = p.value; return acc; }, {});
+                const y = parts.year;
+                const mo = parts.month;
+                const da = parts.day;
+                const h = parts.hour;
+                const mi = parts.minute;
+                const s = parts.second;
+                return `${y}-${mo}-${da} ${h}:${mi}:${s}`;
+            } catch (e) { return iso; }
+        };
         return (list || []).map((m) => {
             const s = m.SyncStatus__c;
             const isSynced = s === 'Synced';
@@ -93,6 +114,7 @@ export default class ChatWorkspace extends LightningElement {
             const statusTitle = isFailed
                 ? (m.ErrorMessage__c || '連携失敗')
                 : (isSynced ? '同期済み' : (isPending ? '連携保留' : s));
+            const ts = m.PostedAt__c || m.CreatedDate;
             return {
                 ...m,
                 expanded: false,
@@ -102,9 +124,53 @@ export default class ChatWorkspace extends LightningElement {
                 isSynced,
                 isPending,
                 isFailed,
-                statusTitle
+                statusTitle,
+                displayTime: formatJst(ts)
             };
         });
+    }
+
+    hasUnsent(messages) {
+        return (messages || []).some((m) => m && m.SyncStatus__c !== 'Synced');
+    }
+
+    withCommentUiState(thread, messages) {
+        const msgs = messages !== undefined ? messages : thread.messages;
+        const hasUnsent = this.hasUnsent(msgs);
+        const value = (thread.newComment || '');
+        const disableByValue = value.trim().length === 0;
+        const uiDisableComment = disableByValue || !!thread.isClosed || hasUnsent;
+        return {
+            ...thread,
+            messages: msgs !== undefined ? msgs : thread.messages,
+            hasUnsent,
+            uiDisableComment,
+            disableComment: disableByValue
+        };
+    }
+
+    // Utility: ensure messages are unique by Id and ordered by CreatedDate ASC
+    dedupeMessages(list) {
+        const seen = new Set();
+        const out = [];
+        (list || []).forEach((m) => {
+            const key = m && m.Id ? m.Id : JSON.stringify({
+                b: m && m.Body__c,
+                p: m && m.PostedAt__c,
+                u: m && m.PostedBy__c
+            });
+            if (!seen.has(key)) {
+                seen.add(key);
+                out.push(m);
+            }
+        });
+        // sort oldest -> newest for stable rendering
+        out.sort((a, b) => {
+            const da = (a && a.CreatedDate) || (a && a.PostedAt__c) || '';
+            const db = (b && b.CreatedDate) || (b && b.PostedAt__c) || '';
+            return da < db ? -1 : da > db ? 1 : 0;
+        });
+        return out;
     }
 
     // New thread creation
@@ -149,25 +215,31 @@ export default class ChatWorkspace extends LightningElement {
             this.firstCommentCount = 0;
             this.clearComposerErrors();
             // Load first page to show the posted comment
-            const msgs = this.decorateMessages(
-                await getMessagesPage({ threadId: id, pageSize: 20, beforeCreatedDate: null })
+            const msgs = this.dedupeMessages(
+                this.decorateMessages(
+                    await getMessagesPage({ threadId: id, pageSize: 20, beforeCreatedDate: null })
+                )
             );
             // Prepend new thread and open it
-            this.threads = [
-                {
-                    Id: id,
-                    Name: title,
-                    messages: msgs,
-                    messagesLoaded: true,
-                    loading: false,
-                    hasMore: msgs.length === 20,
-                    oldestLoadedDate: msgs.length ? msgs[0].CreatedDate : null,
-                    newComment: '',
-                    commentCount: 0,
-                    disableComment: true
-                },
-                ...this.threads
-            ];
+        const newHasUnsent = this.hasUnsent(msgs);
+        this.threads = [
+            {
+                Id: id,
+                Name: title,
+                messages: msgs,
+                messagesLoaded: true,
+                loading: false,
+                hasMore: msgs.length === 20,
+                oldestLoadedDate: msgs.length ? msgs[0].CreatedDate : null,
+                newComment: '',
+                commentCount: 0,
+                disableComment: true,
+                isClosed: false,
+                hasUnsent: newHasUnsent,
+                uiDisableComment: true
+            },
+            ...this.threads
+        ];
             // Keep latest 3 (includes new thread at top)
             // Ensure the new thread is opened first and de-duplicate
             const ids = [id].concat(this.openSectionNames || []).filter((v, i, a) => a.indexOf(v) === i);
@@ -198,7 +270,7 @@ export default class ChatWorkspace extends LightningElement {
         }
         this.threads = this.threads.map((t) =>
             t.Id === id
-                ? { ...t, newComment: value, commentCount: (value || '').length, disableComment: value.trim().length === 0, uiDisableComment: value.trim().length === 0 || !!t.isClosed }
+                ? this.withCommentUiState({ ...t, newComment: value, commentCount: (value || '').length }, undefined)
                 : t
         );
         // clear field error while typing
@@ -211,37 +283,88 @@ export default class ChatWorkspace extends LightningElement {
         const th = this.threads.find((t) => t.Id === id);
         if (!th || th.isClosed || !th.newComment || th.newComment.trim().length === 0) return;
 
-        const result = await LightningConfirm.open({
-            message: 'コメントを投稿します。よろしいですか？',
-            label: '確認',
-            theme: 'default'
-        });
-        if (!result) return;
-
         try {
             await postMessage({ threadId: id, body: th.newComment });
-            // Clear input and refresh messages for this thread
-            const msgs = this.decorateMessages(
-                await getMessages({ threadId: id, limitSize: 100 })
+            // Clear input and refresh messages for this thread (status will be Pending)
+            const msgs = this.dedupeMessages(
+                this.decorateMessages(
+                    await getMessages({ threadId: id, limitSize: 100 })
+                )
             );
             this.threads = this.threads.map((t) =>
                 t.Id === id
-                    ? {
-                          ...t,
-                          messages: msgs,
-                          messagesLoaded: true,
-                          newComment: '',
-                          commentCount: 0,
-                          disableComment: true,
-                          uiDisableComment: true,
-                          oldestLoadedDate: (msgs && msgs.length ? msgs[0].CreatedDate : t.oldestLoadedDate)
-                      }
+                    ? this.withCommentUiState(
+                          {
+                              ...t,
+                              messagesLoaded: true,
+                              newComment: '',
+                              commentCount: 0,
+                              oldestLoadedDate: (msgs && msgs.length ? msgs[0].CreatedDate : t.oldestLoadedDate)
+                          },
+                          msgs
+                      )
                     : t
             );
         } catch (err) {
             const msg = this.normalizeError(err);
             const el = this.template.querySelector(`lightning-textarea[data-id="${id}"]`);
             if (el) { el.setCustomValidity(msg || '投稿に失敗しました'); el.reportValidity(); }
+        }
+    }
+
+    // Send a saved (Pending) message to external
+    async sendMessage(e) {
+        const threadId = e.currentTarget.dataset.threadId;
+        const messageId = e.currentTarget.dataset.id;
+        try {
+            const ok = await LightningConfirm.open({
+                message: 'このメッセージを外部に送信します。よろしいですか？',
+                label: '確認',
+                theme: 'default'
+            });
+            if (!ok) return;
+            await sendMessageApex({ messageId });
+            const msgs = this.dedupeMessages(
+                this.decorateMessages(
+                    await getMessages({ threadId: threadId, limitSize: 100 })
+                )
+            );
+            this.threads = this.threads.map((t) =>
+                t.Id === threadId
+                    ? this.withCommentUiState({ ...t, messagesLoaded: true }, msgs)
+                    : t
+            );
+        } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error(err);
+        }
+    }
+
+    // Delete a message
+    async deleteMessage(e) {
+        const threadId = e.currentTarget.dataset.threadId;
+        const messageId = e.currentTarget.dataset.id;
+        try {
+            const ok = await LightningConfirm.open({
+                message: 'このメッセージを削除します。よろしいですか？',
+                label: '確認',
+                theme: 'warning'
+            });
+            if (!ok) return;
+            await deleteMessageApex({ messageId });
+            const msgs = this.dedupeMessages(
+                this.decorateMessages(
+                    await getMessages({ threadId: threadId, limitSize: 100 })
+                )
+            );
+            this.threads = this.threads.map((t) =>
+                t.Id === threadId
+                    ? this.withCommentUiState({ ...t, messagesLoaded: true }, msgs)
+                    : t
+            );
+        } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error(err);
         }
     }
 
@@ -273,18 +396,22 @@ export default class ChatWorkspace extends LightningElement {
         await Promise.all(
             toLoad.map(async (id) => {
                 try {
-                    const msgs = this.decorateMessages(
-                        await getMessagesPage({ threadId: id, pageSize: 20, beforeCreatedDate: null })
+                    const msgs = this.dedupeMessages(
+                        this.decorateMessages(
+                            await getMessagesPage({ threadId: id, pageSize: 20, beforeCreatedDate: null })
+                        )
                     );
                     this.threads = this.threads.map((t) =>
                         t.Id === id
-                            ? {
-                                  ...t,
-                                  messages: msgs,
-                                  messagesLoaded: true,
-                                  hasMore: msgs.length === 20,
-                                  oldestLoadedDate: msgs.length ? msgs[0].CreatedDate : null
-                              }
+                            ? this.withCommentUiState(
+                                  {
+                                      ...t,
+                                      messagesLoaded: true,
+                                      hasMore: msgs.length === 20,
+                                      oldestLoadedDate: msgs.length ? msgs[0].CreatedDate : null
+                                  },
+                                  msgs
+                              )
                             : t
                     );
                 } catch (err) {
@@ -304,19 +431,23 @@ export default class ChatWorkspace extends LightningElement {
 
         this.threads = this.threads.map((x) => (x.Id === id ? { ...x, loading: true } : x));
         try {
-            const msgs = this.decorateMessages(
-                await getMessagesPage({ threadId: id, pageSize: 20, beforeCreatedDate: t.oldestLoadedDate })
+            const msgs = this.dedupeMessages(
+                this.decorateMessages(
+                    await getMessagesPage({ threadId: id, pageSize: 20, beforeCreatedDate: t.oldestLoadedDate })
+                )
             );
-            const combined = msgs.concat(t.messages || []);
+            const combined = this.dedupeMessages(msgs.concat(t.messages || []));
             this.threads = this.threads.map((x) =>
                 x.Id === id
-                    ? {
-                          ...x,
-                          messages: combined,
-                          loading: false,
-                          hasMore: msgs.length === 20,
-                          oldestLoadedDate: combined.length ? combined[0].CreatedDate : x.oldestLoadedDate
-                      }
+                    ? this.withCommentUiState(
+                          {
+                              ...x,
+                              loading: false,
+                              hasMore: msgs.length === 20,
+                              oldestLoadedDate: combined.length ? combined[0].CreatedDate : x.oldestLoadedDate
+                          },
+                          combined
+                      )
                     : x
             );
         } catch (err) {

@@ -44,7 +44,7 @@
                                                     <template if:false={m.PostedBy__r}>不明な投稿者</template>
                                                 </span>
                                                 <span class="post__time">
-                                                    {m.PostedAt__c}
+                                                    {m.displayTime}
                                                     <span class="post__icons">
                                                         <template if:true={m.isSynced}>
                                                             <lightning-icon icon-name="utility:success" variant="success" size="x-small" title="同期済み"></lightning-icon>
@@ -62,6 +62,29 @@
                                             <template if:true={m.canExpand}>
                                                 <div class="post__more slds-m-top_xx-small">
                                                     <button class="slds-button slds-button_reset slds-text-link" data-thread-id={t.Id} data-id={m.Id} onclick={toggleExpand}>{m.expandLabel}</button>
+                                                </div>
+                                            </template>
+                                            <!-- Actions for unsent messages -->
+                                            <template if:true={m.isPending}>
+                                                <div class="post__actions slds-m-top_small slds-grid slds-grid_align-end slds-gutters_small">
+                                                    <div class="slds-col_auto">
+                                                        <lightning-button
+                                                            data-thread-id={t.Id}
+                                                            data-id={m.Id}
+                                                            label="送信"
+                                                            variant="brand"
+                                                            onclick={sendMessage}
+                                                        ></lightning-button>
+                                                    </div>
+                                                    <div class="slds-col_auto slds-m-left_x-small">
+                                                        <lightning-button
+                                                            data-thread-id={t.Id}
+                                                            data-id={m.Id}
+                                                            label="削除"
+                                                            variant="destructive-text"
+                                                            onclick={deleteMessage}
+                                                        ></lightning-button>
+                                                    </div>
                                                 </div>
                                             </template>
                                         </div>
