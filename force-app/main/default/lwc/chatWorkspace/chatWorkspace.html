@@ -40,8 +40,7 @@
                                         <div key={m.Id} class="post">
                                             <div class="post__header">
                                                 <span class="post__author">
-                                                    <template if:true={m.PostedBy__r}>{m.PostedBy__r.Name}</template>
-                                                    <template if:false={m.PostedBy__r}>不明な投稿者</template>
+                                                    {m.displayAuthor}
                                                 </span>
                                                 <span class="post__time">
                                                     {m.displayTime}

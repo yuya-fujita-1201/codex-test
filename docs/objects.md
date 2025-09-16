@@ -15,7 +15,8 @@
 - 主な項目:
   - `Body__c`(長テキスト): 本文（最大1000）
   - `Thread__c`(主従): 親スレッド
-  - `PostedBy__c`(参照:User): 投稿者
+  - `PostedBy__c`(参照:User): 投稿者ユーザ参照
+  - `GNT_PostedBy__c`(テキスト): 投稿者名（画面/API表示用）
   - `PostedAt__c`(日時): 投稿日時
   - `ExternalMessageId__c`(外部ID,一意): 外部メッセージID
   - `SyncStatus__c`(ピックリスト): Pending / Synced / Failed
@@ -37,4 +38,3 @@
 - `Custom_Chat_User`
   - オブジェクト/項目権限（スレッド/メッセージ）
   - タブ可視化: `Chat_Workspace`=Visible, `ChatThread__c`/`ChatMessage__c`=Available
-

@@ -36,8 +36,8 @@ Outbound HTTP payload
     "salesforceObjectType": "Account",               // from `ChatThread__c.RelatedObjectType__c`
     "threadTitle": "...",                            // `ChatThread__c.Name`
     "threadDescription": "...",                      // `ChatThread__c.Description__c`
-    "senderName": "...",                             // `ChatMessage__c.PostedBy__r.Name`
-    "senderId": "005XXXXXXXXXX",                     // `ChatMessage__c.PostedBy__c`
+    "senderName": "...",                             // `ChatMessage__c.GNT_PostedBy__c`
+    "senderId": "005XXXXXXXXXX",                     // `ChatMessage__c.CreatedById`
     "message": "...",                                 // `ChatMessage__c.Body__c`
     "messageType": "text"
   }

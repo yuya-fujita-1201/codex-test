@@ -69,6 +69,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>ChatMessage__c.GNT_PostedBy__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>ChatMessage__c.PostedAt__c</field>
         <readable>true</readable>
     </fieldPermissions>

@@ -55,7 +55,7 @@ public with sharing class ChatMessageController {
         if (threadId == null) return new List<ChatMessage__c>();
         Integer lim = (limitSize == null || limitSize <= 0) ? 50 : limitSize;
         return [
-            SELECT Id, Body__c, PostedAt__c, PostedBy__c, PostedBy__r.Name, SyncStatus__c, ErrorMessage__c, ExternalMessageId__c
+            SELECT Id, Body__c, PostedAt__c, GNT_PostedBy__c, CreatedById, CreatedBy.Name, SyncStatus__c, ErrorMessage__c, ExternalMessageId__c
             FROM ChatMessage__c
             WHERE Thread__c = :threadId
             ORDER BY CreatedDate ASC
@@ -70,7 +70,7 @@ public with sharing class ChatMessageController {
         Integer lim = (pageSize == null || pageSize <= 0) ? 20 : pageSize;
         if (beforeCreatedDate == null) {
             List<ChatMessage__c> r = [
-                SELECT Id, Body__c, PostedAt__c, PostedBy__c, PostedBy__r.Name, SyncStatus__c, ErrorMessage__c, ExternalMessageId__c, CreatedDate
+                SELECT Id, Body__c, PostedAt__c, GNT_PostedBy__c, CreatedById, CreatedBy.Name, SyncStatus__c, ErrorMessage__c, ExternalMessageId__c, CreatedDate
                 FROM ChatMessage__c
                 WHERE Thread__c = :threadId
                 ORDER BY CreatedDate DESC
@@ -79,7 +79,7 @@ public with sharing class ChatMessageController {
             return reverseList(r);
         } else {
             List<ChatMessage__c> r = [
-                SELECT Id, Body__c, PostedAt__c, PostedBy__c, PostedBy__r.Name, SyncStatus__c, ErrorMessage__c, ExternalMessageId__c, CreatedDate
+                SELECT Id, Body__c, PostedAt__c, GNT_PostedBy__c, CreatedById, CreatedBy.Name, SyncStatus__c, ErrorMessage__c, ExternalMessageId__c, CreatedDate
                 FROM ChatMessage__c
                 WHERE Thread__c = :threadId AND CreatedDate < :beforeCreatedDate
                 ORDER BY CreatedDate DESC
@@ -118,7 +118,7 @@ public with sharing class ChatMessageController {
             Thread__c = threadId,
             Body__c = body,
             PostedAt__c = Datetime.now(),
-            PostedBy__c = UserInfo.getUserId(),
+            GNT_PostedBy__c = UserInfo.getName(),
             SyncStatus__c = 'Pending',
             ExternalMessageId__c = null,
             ErrorMessage__c = null
@@ -136,8 +136,9 @@ public with sharing class ChatMessageController {
         ChatOutboundService.processMessage(messageId);
         // 反映後の状態を返却
         return [
-            SELECT Id, Body__c, PostedAt__c, PostedBy__c, PostedBy__r.Name,
-                   SyncStatus__c, ErrorMessage__c, ExternalMessageId__c, CreatedDate, Thread__c
+            SELECT Id, Body__c, PostedAt__c, GNT_PostedBy__c,
+                   SyncStatus__c, ErrorMessage__c, ExternalMessageId__c, CreatedDate, Thread__c,
+                   CreatedById, CreatedBy.Name
             FROM ChatMessage__c WHERE Id = :messageId LIMIT 1
         ];
     }

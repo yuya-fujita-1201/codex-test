@@ -115,6 +115,7 @@ export default class ChatWorkspace extends LightningElement {
                 ? (m.ErrorMessage__c || '連携失敗')
                 : (isSynced ? '同期済み' : (isPending ? '連携保留' : s));
             const ts = m.PostedAt__c || m.CreatedDate;
+            const author = m.GNT_PostedBy__c || (m.CreatedBy && m.CreatedBy.Name) || '';
             return {
                 ...m,
                 expanded: false,
@@ -125,7 +126,8 @@ export default class ChatWorkspace extends LightningElement {
                 isPending,
                 isFailed,
                 statusTitle,
-                displayTime: formatJst(ts)
+                displayTime: formatJst(ts),
+                displayAuthor: author || '不明な投稿者'
             };
         });
     }
@@ -157,7 +159,7 @@ export default class ChatWorkspace extends LightningElement {
             const key = m && m.Id ? m.Id : JSON.stringify({
                 b: m && m.Body__c,
                 p: m && m.PostedAt__c,
-                u: m && m.PostedBy__c
+                u: m && m.GNT_PostedBy__c
             });
             if (!seen.has(key)) {
                 seen.add(key);

@@ -76,7 +76,7 @@ public with sharing class ChatOutboundService implements Database.AllowsCallouts
         if (messageId == null) return;
 
         ChatMessage__c m = [
-            SELECT Id, Body__c, PostedBy__c, PostedBy__r.Name, Thread__c,
+            SELECT Id, Body__c, GNT_PostedBy__c, CreatedById, CreatedBy.Name, Thread__c,
                    SyncStatus__c,
                    Thread__r.Name,
                    Thread__r.RelatedRecordId__c, Thread__r.RelatedObjectType__c
@@ -89,8 +89,8 @@ public with sharing class ChatOutboundService implements Database.AllowsCallouts
         // - salesforceObjectType: Thread.RelatedObjectType__c
         // - threadTitle       : Thread.Name
         // - threadDescription : Thread.Description__c
-        // - senderName        : ChatMessage.PostedBy__r.Name
-        // - senderId          : ChatMessage.PostedBy__c
+        // - senderName        : ChatMessage.GNT_PostedBy__c（空なら CreatedBy.Name を利用）
+        // - senderId          : ChatMessage.CreatedById
         // - message           : ChatMessage.Body__c
         // - messageType       : 'text' 固定
         Id relId = m.Thread__r.RelatedRecordId__c;
@@ -99,8 +99,10 @@ public with sharing class ChatOutboundService implements Database.AllowsCallouts
             'salesforceRecordId'   => relId,
             'salesforceObjectType' => m.Thread__r.RelatedObjectType__c,
             'threadTitle'          => m.Thread__r.Name,
-            'senderName'           => (m.PostedBy__r != null ? m.PostedBy__r.Name : null),
-            'senderId'             => m.PostedBy__c,
+            'senderName'           => String.isNotBlank(m.GNT_PostedBy__c)
+                ? m.GNT_PostedBy__c
+                : (m.CreatedBy != null ? m.CreatedBy.Name : null),
+            'senderId'             => m.CreatedById,
             'salesforceThreadId'   => m.Thread__c,
             'message'              => m.Body__c,
             'messageType'          => 'text'
