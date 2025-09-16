@@ -13,12 +13,6 @@
     <name>CustomObject</name>
   </types>
   <types>
-    <members>ChatMessage__c.ReplyTo__c</members>
-    <members>ChatThread__c.Description__c</members>
-    <members>ChatThread__c.ExternalThreadId__c</members>
-    <name>CustomField</name>
-  </types>
-  <types>
     <members>ChatEventBus</members>
     <members>ChatOutboundQueueable</members>
     <members>ChatOutboundQueueableTest</members>

@@ -1,17 +1,17 @@
 @IsTest
-private class ChatMessageControllerTest {
+private class GNT_ChatMessageControllerTest {
     @IsTest
     static void testCreateThreadAndMessages() {
         Test.startTest();
-        Id threadId = ChatMessageController.createThread('テストスレッド');
+        Id threadId = GNT_ChatMessageController.createThread('テストスレッド');
         System.assertNotEquals(null, threadId, 'thread created');
 
-        Id msgId = ChatMessageController.postMessage(threadId, 'こんにちは');
+        Id msgId = GNT_ChatMessageController.postMessage(threadId, 'こんにちは');
         System.assertNotEquals(null, msgId, 'message created');
         Test.stopTest();
 
         // verify wire method returns message
-        List<ChatMessage__c> msgs = ChatMessageController.getMessages(threadId, 10);
+        List<GNT_ChatMessage__c> msgs = GNT_ChatMessageController.getMessages(threadId, 10);
         System.assertEquals(1, msgs.size(), 'one message returned');
     }
 
@@ -19,7 +19,7 @@ private class ChatMessageControllerTest {
     static void testCreateThreadValidation() {
         Boolean thrown = false;
         try {
-            ChatMessageController.createThread('');
+            GNT_ChatMessageController.createThread('');
         } catch (Exception e) {
             thrown = true;
         }

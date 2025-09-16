@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Thread__c</fullName>
+    <fullName>GNT_Thread__c</fullName>
     <description>Parent Chat Thread</description>
-    <label>Thread</label>
-    <referenceTo>ChatThread__c</referenceTo>
+    <label>GNT Thread</label>
+    <referenceTo>GNT_ChatThread__c</referenceTo>
     <relationshipLabel>Messages</relationshipLabel>
     <relationshipName>Messages</relationshipName>
     <reparentableMasterDetail>true</reparentableMasterDetail>
     <type>MasterDetail</type>
     <writeRequiresMasterRead>false</writeRequiresMasterRead>
 </CustomField>
-

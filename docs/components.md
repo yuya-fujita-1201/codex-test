@@ -1,6 +1,6 @@
 ## 画面（コンポーネント）定義
 
-### Chat Workspace（LWC: `chatWorkspace`）
+### Chat Workspace（LWC: `gntChatWorkspace`）
 - 目的: スレッド一覧 + メッセージパネルを 2 カラムで表示するワークスペース。
 - 構成:
   - ページヘッダ: タイトル「チャット ワークスペース」、選択中スレッド名を表示。
@@ -28,6 +28,5 @@
 ---
 
 ### タブ
-- `Chat Workspace`（CustomTab）: LWC `chatWorkspace` をタブとして公開
-- 権限セット `Custom_Chat_User` でタブを可視化
-
+- `GNT Chat Workspace`（CustomTab）: LWC `gntChatWorkspace` をタブとして公開
+- 権限セット `GNT_Custom_Chat_User` でタブを可視化

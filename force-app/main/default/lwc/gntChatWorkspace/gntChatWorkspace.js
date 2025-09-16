@@ -1,17 +1,17 @@
 import { LightningElement, track, api, wire } from 'lwc';
-import getRecentThreads from '@salesforce/apex/ChatMessageController.getRecentThreads';
-import getRecentThreadsForRecord from '@salesforce/apex/ChatMessageController.getRecentThreadsForRecord';
-import getMessages from '@salesforce/apex/ChatMessageController.getMessages';
-import getMessagesPage from '@salesforce/apex/ChatMessageController.getMessagesPage';
-import createThreadApex from '@salesforce/apex/ChatMessageController.createThread';
-import createThreadForRecord from '@salesforce/apex/ChatMessageController.createThreadForRecord';
-import postMessage from '@salesforce/apex/ChatMessageController.postMessage';
-import sendMessageApex from '@salesforce/apex/ChatMessageController.sendMessage';
-import deleteMessageApex from '@salesforce/apex/ChatMessageController.deleteMessage';
+import getRecentThreads from '@salesforce/apex/GNT_ChatMessageController.getRecentThreads';
+import getRecentThreadsForRecord from '@salesforce/apex/GNT_ChatMessageController.getRecentThreadsForRecord';
+import getMessages from '@salesforce/apex/GNT_ChatMessageController.getMessages';
+import getMessagesPage from '@salesforce/apex/GNT_ChatMessageController.getMessagesPage';
+import createThreadApex from '@salesforce/apex/GNT_ChatMessageController.createThread';
+import createThreadForRecord from '@salesforce/apex/GNT_ChatMessageController.createThreadForRecord';
+import postMessage from '@salesforce/apex/GNT_ChatMessageController.postMessage';
+import sendMessageApex from '@salesforce/apex/GNT_ChatMessageController.sendMessage';
+import deleteMessageApex from '@salesforce/apex/GNT_ChatMessageController.deleteMessage';
 import LightningConfirm from 'lightning/confirm';
 import { getObjectInfo } from 'lightning/uiObjectInfoApi';
 
-export default class ChatWorkspace extends LightningElement {
+export default class GNT_ChatWorkspace extends LightningElement {
     @track threads = [];
     _recordId;
     _objectApiName;
@@ -107,20 +107,20 @@ export default class ChatWorkspace extends LightningElement {
             } catch (e) { return iso; }
         };
         return (list || []).map((m) => {
-            const s = m.SyncStatus__c;
+            const s = m.GNT_SyncStatus__c;
             const isSynced = s === 'Synced';
             const isPending = s === 'Pending';
             const isFailed = s === 'Failed';
             const statusTitle = isFailed
-                ? (m.ErrorMessage__c || '連携失敗')
+                ? (m.GNT_ErrorMessage__c || '連携失敗')
                 : (isSynced ? '同期済み' : (isPending ? '連携保留' : s));
-            const ts = m.PostedAt__c || m.CreatedDate;
+            const ts = m.GNT_PostedAt__c || m.CreatedDate;
             const author = m.GNT_PostedBy__c || (m.CreatedBy && m.CreatedBy.Name) || '';
             return {
                 ...m,
                 expanded: false,
-                canExpand: (m.Body__c || '').length > 255,
-                displayBody: truncate(m.Body__c, false),
+                canExpand: (m.GNT_Body__c || '').length > 255,
+                displayBody: truncate(m.GNT_Body__c, false),
                 expandLabel: 'もっと見る',
                 isSynced,
                 isPending,
@@ -133,7 +133,7 @@ export default class ChatWorkspace extends LightningElement {
     }
 
     hasUnsent(messages) {
-        return (messages || []).some((m) => m && m.SyncStatus__c !== 'Synced');
+        return (messages || []).some((m) => m && m.GNT_SyncStatus__c !== 'Synced');
     }
 
     withCommentUiState(thread, messages) {
@@ -157,8 +157,8 @@ export default class ChatWorkspace extends LightningElement {
         const out = [];
         (list || []).forEach((m) => {
             const key = m && m.Id ? m.Id : JSON.stringify({
-                b: m && m.Body__c,
-                p: m && m.PostedAt__c,
+                b: m && m.GNT_Body__c,
+                p: m && m.GNT_PostedAt__c,
                 u: m && m.GNT_PostedBy__c
             });
             if (!seen.has(key)) {
@@ -168,8 +168,8 @@ export default class ChatWorkspace extends LightningElement {
         });
         // sort oldest -> newest for stable rendering
         out.sort((a, b) => {
-            const da = (a && a.CreatedDate) || (a && a.PostedAt__c) || '';
-            const db = (b && b.CreatedDate) || (b && b.PostedAt__c) || '';
+            const da = (a && a.CreatedDate) || (a && a.GNT_PostedAt__c) || '';
+            const db = (b && b.CreatedDate) || (b && b.GNT_PostedAt__c) || '';
             return da < db ? -1 : da > db ? 1 : 0;
         });
         return out;
@@ -464,7 +464,7 @@ export default class ChatWorkspace extends LightningElement {
         const msgId = e.currentTarget.dataset.id;
         const update = (m) => {
             const expanded = !m.expanded;
-            const full = m.Body__c || '';
+            const full = m.GNT_Body__c || '';
             return {
                 ...m,
                 expanded,

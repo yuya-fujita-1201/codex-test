@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>SyncStatus__c</fullName>
-    <label>Sync Status</label>
+    <fullName>GNT_SyncStatus__c</fullName>
+    <label>GNT Sync Status</label>
     <type>Picklist</type>
     <valueSet>
         <valueSetDefinition>
@@ -24,4 +24,3 @@
         </valueSetDefinition>
     </valueSet>
 </CustomField>
-

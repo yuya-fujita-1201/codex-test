@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>ErrorMessage__c</fullName>
-    <label>Error Message</label>
+    <fullName>GNT_Body__c</fullName>
+    <label>GNT Body</label>
     <type>LongTextArea</type>
-    <visibleLines>3</visibleLines>
-    <length>32768</length>
+    <visibleLines>5</visibleLines>
+    <length>1000</length>
 </CustomField>
-
