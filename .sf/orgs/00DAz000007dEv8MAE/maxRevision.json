@@ -1,6 +1,6 @@
 {
     "fileVersion": 0,
-    "serverMaxRevisionCounter": 4009,
+    "serverMaxRevisionCounter": 4041,
     "sourceMembers": {
         "NamedCredential__GNT_Azure_Blob_NC": {
             "memberType": "NamedCredential",
@@ -256,7 +256,7 @@
         },
         "Profile__GNT_Dev": {
             "memberType": "Profile",
-            "serverRevisionCounter": 3075,
+            "serverRevisionCounter": 4040,
             "lastRetrievedFromServer": null,
             "isNameObsolete": false
         },
@@ -1636,13 +1636,13 @@
         },
         "CustomField__GNT_ChatMessage__c.GNT_PostedByUser__c": {
             "memberType": "CustomField",
-            "serverRevisionCounter": 3080,
+            "serverRevisionCounter": 4019,
             "lastRetrievedFromServer": null,
             "isNameObsolete": false
         },
         "CustomObject__GNT_ChatMessage__c": {
             "memberType": "CustomObject",
-            "serverRevisionCounter": 3101,
+            "serverRevisionCounter": 4030,
             "lastRetrievedFromServer": null,
             "isNameObsolete": false
         },
@@ -1660,7 +1660,7 @@
         },
         "CustomField__GNT_ChatMessage__c.GNT_Thread__c": {
             "memberType": "CustomField",
-            "serverRevisionCounter": 3084,
+            "serverRevisionCounter": 4021,
             "lastRetrievedFromServer": null,
             "isNameObsolete": false
         },
@@ -1702,8 +1702,8 @@
         },
         "ApexClass__GNT_ChatMessageControllerTest": {
             "memberType": "ApexClass",
-            "serverRevisionCounter": 3092,
-            "lastRetrievedFromServer": null,
+            "serverRevisionCounter": 4041,
+            "lastRetrievedFromServer": 4041,
             "isNameObsolete": false
         },
         "ApexClass__GNT_ChatOutboundService": {
@@ -1720,55 +1720,55 @@
         },
         "LightningComponentBundle__gntChatWorkspace": {
             "memberType": "LightningComponentBundle",
-            "serverRevisionCounter": 3095,
+            "serverRevisionCounter": 4024,
             "lastRetrievedFromServer": null,
             "isNameObsolete": false
         },
         "LightningComponentResource__gntChatWorkspace/gntChatWorkspace.css": {
             "memberType": "LightningComponentResource",
-            "serverRevisionCounter": 3096,
+            "serverRevisionCounter": 4025,
             "lastRetrievedFromServer": null,
             "isNameObsolete": false
         },
         "LightningComponentResource__gntChatWorkspace/gntChatWorkspace.js-meta.xml": {
             "memberType": "LightningComponentResource",
-            "serverRevisionCounter": 3097,
+            "serverRevisionCounter": 4026,
             "lastRetrievedFromServer": null,
             "isNameObsolete": false
         },
         "LightningComponentResource__gntChatWorkspace/gntChatWorkspace.html": {
             "memberType": "LightningComponentResource",
-            "serverRevisionCounter": 3098,
+            "serverRevisionCounter": 4027,
             "lastRetrievedFromServer": null,
             "isNameObsolete": false
         },
         "LightningComponentResource__gntChatWorkspace/gntChatWorkspace.js": {
             "memberType": "LightningComponentResource",
-            "serverRevisionCounter": 3099,
+            "serverRevisionCounter": 4028,
             "lastRetrievedFromServer": null,
             "isNameObsolete": false
         },
         "NamedCredential__External_Chat": {
             "memberType": "NamedCredential",
-            "serverRevisionCounter": 3100,
+            "serverRevisionCounter": 4029,
             "lastRetrievedFromServer": null,
             "isNameObsolete": false
         },
         "CustomObject__GNT_ChatThread__c": {
             "memberType": "CustomObject",
-            "serverRevisionCounter": 3102,
+            "serverRevisionCounter": 4031,
             "lastRetrievedFromServer": null,
             "isNameObsolete": false
         },
         "CustomTab__GNT_Chat_Workspace": {
             "memberType": "CustomTab",
-            "serverRevisionCounter": 3103,
+            "serverRevisionCounter": 4032,
             "lastRetrievedFromServer": null,
             "isNameObsolete": false
         },
         "PermissionSet__GNT_Custom_Chat_User": {
             "memberType": "PermissionSet",
-            "serverRevisionCounter": 3104,
+            "serverRevisionCounter": 4033,
             "lastRetrievedFromServer": null,
             "isNameObsolete": false
         }
