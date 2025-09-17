@@ -3,8 +3,8 @@
     <deploymentStatus>Deployed</deploymentStatus>
     <description>Chat thread for custom chat.</description>
     <enableActivities>true</enableActivities>
-    <label>GNT チャットスレッド</label>
-    <pluralLabel>GNT チャットスレッド</pluralLabel>
+    <label>チャットスレッド</label>
+    <pluralLabel>チャットスレッド</pluralLabel>
     <sharingModel>Private</sharingModel>
     <nameField>
         <label>タイトル</label>

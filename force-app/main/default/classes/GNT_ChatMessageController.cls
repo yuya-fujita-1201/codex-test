@@ -1,4 +1,6 @@
 public with sharing class GNT_ChatMessageController {
+    private static Boolean singleThreadModeCached;
+    @TestVisible private static Boolean singleThreadModeOverride;
     @AuraEnabled(cacheable=true)
     public static List<GNT_ChatThread__c> getRecentThreads(Integer limitSize) {
         Integer lim = (limitSize == null || limitSize <= 0) ? 20 : limitSize;
@@ -38,6 +40,20 @@ public with sharing class GNT_ChatMessageController {
     public static Id createThreadForRecord(String title, Id recordId, String objectApiName) {
         if (String.isBlank(title)) throw new AuraHandledException('タイトルは必須です');
         if (title.length() > 80) throw new AuraHandledException('タイトルは80文字以内で入力してください');
+        if (recordId == null) throw new AuraHandledException('対象レコードが指定されていません');
+
+        if (isSingleThreadModeEnabled()) {
+            List<GNT_ChatThread__c> existing = [
+                SELECT Id
+                FROM GNT_ChatThread__c
+                WHERE GNT_RelatedRecordId__c = :String.valueOf(recordId)
+                LIMIT 1
+            ];
+            if (!existing.isEmpty()) {
+                throw new AuraHandledException('このレコードには既にチャットスレッドが存在します。');
+            }
+        }
+
         GNT_ChatThread__c t = new GNT_ChatThread__c(
             Name = title,
             GNT_Status__c = 'Active',
@@ -148,5 +164,25 @@ public with sharing class GNT_ChatMessageController {
     public static void deleteMessage(Id messageId) {
         if (messageId == null) return;
         delete [SELECT Id FROM GNT_ChatMessage__c WHERE Id = :messageId LIMIT 1];
+    }
+
+    private static Boolean isSingleThreadModeEnabled() {
+        if (singleThreadModeOverride != null) {
+            return singleThreadModeOverride;
+        }
+        if (singleThreadModeCached == null) {
+            GNT_ChatConfiguration__mdt setting = GNT_ChatConfiguration__mdt.getInstance('GNT_Default');
+            singleThreadModeCached = (setting != null && setting.GNT_EnableSingleThread__c);
+        }
+        return singleThreadModeCached;
+    }
+
+    @TestVisible private static void setSingleThreadModeForTest(Boolean value) {
+        singleThreadModeOverride = value;
+    }
+
+    @TestVisible private static void resetSingleThreadModeCache() {
+        singleThreadModeCached = null;
+        singleThreadModeOverride = null;
     }
 }

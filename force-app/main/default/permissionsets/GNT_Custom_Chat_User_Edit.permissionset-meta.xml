@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
-    <label>GNT_Custom_Chat_User</label>
+    <label>GNT_Custom_Chat_User_Edit</label>
     <hasActivationRequired>false</hasActivationRequired>
 
     <!-- Apex access for LWC controller -->

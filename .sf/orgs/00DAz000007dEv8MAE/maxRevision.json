@@ -1,6 +1,6 @@
 {
     "fileVersion": 0,
-    "serverMaxRevisionCounter": 4183,
+    "serverMaxRevisionCounter": 4855,
     "sourceMembers": {
         "NamedCredential__GNT_Azure_Blob_NC": {
             "memberType": "NamedCredential",
@@ -256,7 +256,7 @@
         },
         "Profile__GNT_Dev": {
             "memberType": "Profile",
-            "serverRevisionCounter": 4157,
+            "serverRevisionCounter": 4211,
             "lastRetrievedFromServer": null,
             "isNameObsolete": false
         },
@@ -286,7 +286,7 @@
         },
         "Profile__GNT_Biz_RevCenter": {
             "memberType": "Profile",
-            "serverRevisionCounter": 4076,
+            "serverRevisionCounter": 4191,
             "lastRetrievedFromServer": null,
             "isNameObsolete": false
         },
@@ -1396,7 +1396,7 @@
         },
         "FlexiPage__GNT_IndividualApp": {
             "memberType": "FlexiPage",
-            "serverRevisionCounter": 4001,
+            "serverRevisionCounter": 4835,
             "lastRetrievedFromServer": null,
             "isNameObsolete": false
         },
@@ -1642,8 +1642,8 @@
         },
         "CustomObject__GNT_ChatMessage__c": {
             "memberType": "CustomObject",
-            "serverRevisionCounter": 4167,
-            "lastRetrievedFromServer": 4128,
+            "serverRevisionCounter": 4221,
+            "lastRetrievedFromServer": 4194,
             "isNameObsolete": false
         },
         "CustomField__GNT_ChatMessage__c.GNT_PostedBy__c": {
@@ -1660,8 +1660,8 @@
         },
         "CustomField__GNT_ChatMessage__c.GNT_Thread__c": {
             "memberType": "CustomField",
-            "serverRevisionCounter": 4158,
-            "lastRetrievedFromServer": 4121,
+            "serverRevisionCounter": 4213,
+            "lastRetrievedFromServer": 4158,
             "isNameObsolete": false
         },
         "CustomField__GNT_ChatThread__c.GNT_Description__c": {
@@ -1697,55 +1697,55 @@
         "ApexClass__GNT_ChatMessageController": {
             "memberType": "ApexClass",
             "serverRevisionCounter": 4160,
-            "lastRetrievedFromServer": null,
+            "lastRetrievedFromServer": 4160,
             "isNameObsolete": false
         },
         "ApexClass__GNT_ChatMessageControllerTest": {
             "memberType": "ApexClass",
             "serverRevisionCounter": 4161,
-            "lastRetrievedFromServer": 4047,
+            "lastRetrievedFromServer": 4161,
             "isNameObsolete": false
         },
         "ApexClass__GNT_ChatOutboundService": {
             "memberType": "ApexClass",
             "serverRevisionCounter": 4162,
-            "lastRetrievedFromServer": null,
+            "lastRetrievedFromServer": 4162,
             "isNameObsolete": false
         },
         "ApexTrigger__GNT_ChatMessageTrigger": {
             "memberType": "ApexTrigger",
             "serverRevisionCounter": 3094,
-            "lastRetrievedFromServer": null,
+            "lastRetrievedFromServer": 3094,
             "isNameObsolete": false
         },
         "LightningComponentBundle__gntChatWorkspace": {
             "memberType": "LightningComponentBundle",
-            "serverRevisionCounter": 4024,
-            "lastRetrievedFromServer": null,
+            "serverRevisionCounter": 4215,
+            "lastRetrievedFromServer": 4024,
             "isNameObsolete": false
         },
         "LightningComponentResource__gntChatWorkspace/gntChatWorkspace.css": {
             "memberType": "LightningComponentResource",
-            "serverRevisionCounter": 4025,
-            "lastRetrievedFromServer": null,
+            "serverRevisionCounter": 4216,
+            "lastRetrievedFromServer": 4025,
             "isNameObsolete": false
         },
         "LightningComponentResource__gntChatWorkspace/gntChatWorkspace.js-meta.xml": {
             "memberType": "LightningComponentResource",
-            "serverRevisionCounter": 4026,
-            "lastRetrievedFromServer": null,
+            "serverRevisionCounter": 4217,
+            "lastRetrievedFromServer": 4026,
             "isNameObsolete": false
         },
         "LightningComponentResource__gntChatWorkspace/gntChatWorkspace.html": {
             "memberType": "LightningComponentResource",
-            "serverRevisionCounter": 4027,
-            "lastRetrievedFromServer": null,
+            "serverRevisionCounter": 4218,
+            "lastRetrievedFromServer": 4027,
             "isNameObsolete": false
         },
         "LightningComponentResource__gntChatWorkspace/gntChatWorkspace.js": {
             "memberType": "LightningComponentResource",
-            "serverRevisionCounter": 4028,
-            "lastRetrievedFromServer": null,
+            "serverRevisionCounter": 4219,
+            "lastRetrievedFromServer": 4028,
             "isNameObsolete": false
         },
         "NamedCredential__External_Chat": {
@@ -1756,14 +1756,14 @@
         },
         "CustomObject__GNT_ChatThread__c": {
             "memberType": "CustomObject",
-            "serverRevisionCounter": 4164,
-            "lastRetrievedFromServer": 4129,
+            "serverRevisionCounter": 4222,
+            "lastRetrievedFromServer": 4164,
             "isNameObsolete": false
         },
         "CustomTab__GNT_Chat_Workspace": {
             "memberType": "CustomTab",
-            "serverRevisionCounter": 4032,
-            "lastRetrievedFromServer": null,
+            "serverRevisionCounter": 4223,
+            "lastRetrievedFromServer": 4032,
             "isNameObsolete": false
         },
         "PermissionSet__GNT_Custom_Chat_User": {
@@ -1816,14 +1816,44 @@
         },
         "FlexiPage__Chat_Message": {
             "memberType": "FlexiPage",
-            "serverRevisionCounter": 4152,
-            "lastRetrievedFromServer": 4152,
+            "serverRevisionCounter": 4195,
+            "lastRetrievedFromServer": 4195,
             "isNameObsolete": false
         },
         "NamedCredential__GNT_Azure_Chat_NC": {
             "memberType": "NamedCredential",
-            "serverRevisionCounter": 4183,
+            "serverRevisionCounter": 4220,
             "lastRetrievedFromServer": 4183,
+            "isNameObsolete": false
+        },
+        "PermissionSet__GNT_Custom_Chat_User_Edit": {
+            "memberType": "PermissionSet",
+            "serverRevisionCounter": 4224,
+            "lastRetrievedFromServer": 4184,
+            "isNameObsolete": false
+        },
+        "PermissionSet__GNT_Custom_Chat_User_Read": {
+            "memberType": "PermissionSet",
+            "serverRevisionCounter": 4225,
+            "lastRetrievedFromServer": 4185,
+            "isNameObsolete": false
+        },
+        "CustomMetadata__GNT_ChatConfiguration.GNT_Default": {
+            "memberType": "CustomMetadata",
+            "serverRevisionCounter": 4855,
+            "lastRetrievedFromServer": 4855,
+            "isNameObsolete": false
+        },
+        "CustomField__GNT_ChatConfiguration__mdt.GNT_EnableSingleThread__c": {
+            "memberType": "CustomField",
+            "serverRevisionCounter": 4843,
+            "lastRetrievedFromServer": null,
+            "isNameObsolete": false
+        },
+        "Layout__GNT_ChatConfiguration__mdt-GNT Chat Configuration Layout": {
+            "memberType": "Layout",
+            "serverRevisionCounter": 4849,
+            "lastRetrievedFromServer": 4849,
             "isNameObsolete": false
         }
     }

@@ -3,8 +3,8 @@
     <deploymentStatus>Deployed</deploymentStatus>
     <description>Chat message for custom chat.</description>
     <enableActivities>false</enableActivities>
-    <label>GNT チャットメッセージ</label>
-    <pluralLabel>GNT チャットメッセージ</pluralLabel>
+    <label>チャットメッセージ</label>
+    <pluralLabel>チャットメッセージ</pluralLabel>
     <sharingModel>ControlledByParent</sharingModel>
     <nameField>
         <displayFormat>CM-{000000}</displayFormat>

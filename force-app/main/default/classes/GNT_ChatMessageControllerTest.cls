@@ -71,6 +71,7 @@ private class GNT_ChatMessageControllerTest {
 
     @IsTest
     static void testThreadQueriesAndCreation() {
+        GNT_ChatMessageController.resetSingleThreadModeCache();
         List<GNT_ChatThread__c> seed = new List<GNT_ChatThread__c>{
             newThread(false, false),
             newThread(false, true)
@@ -101,6 +102,7 @@ private class GNT_ChatMessageControllerTest {
 
     @IsTest
     static void testPostMessageValidationsAndQueries() {
+        GNT_ChatMessageController.resetSingleThreadModeCache();
         GNT_ChatThread__c thread = newThread(false, false);
         insert thread;
 
@@ -165,6 +167,7 @@ private class GNT_ChatMessageControllerTest {
 
     @IsTest
     static void testSendMessageSuccessAndCalloutHelpers() {
+        GNT_ChatMessageController.resetSingleThreadModeCache();
         GNT_ChatThread__c thread = newThread(false, true);
         insert thread;
         Id messageId = GNT_ChatMessageController.postMessage(thread.Id, 'Callout Body');
@@ -182,6 +185,7 @@ private class GNT_ChatMessageControllerTest {
 
     @IsTest
     static void testSendMessageFailureBranches() {
+        GNT_ChatMessageController.resetSingleThreadModeCache();
         GNT_ChatThread__c thread = newThread(false, false);
         insert thread;
 
@@ -202,5 +206,33 @@ private class GNT_ChatMessageControllerTest {
         errored = [SELECT GNT_SyncStatus__c, GNT_ErrorMessage__c FROM GNT_ChatMessage__c WHERE Id = :message.Id];
         System.assertEquals('Failed', errored.GNT_SyncStatus__c);
         System.assertNotEquals(null, errored.GNT_ErrorMessage__c);
+    }
+
+    @IsTest
+    static void testSingleThreadModeToggle() {
+        GNT_ChatMessageController.resetSingleThreadModeCache();
+        try {
+            GNT_ChatMessageController.setSingleThreadModeForTest(false);
+            Id multiRecordId = '001000000000010AAA';
+            Id first = GNT_ChatMessageController.createThreadForRecord('First Multi Thread', multiRecordId, 'Account');
+            System.assertNotEquals(null, first);
+            Id second = GNT_ChatMessageController.createThreadForRecord('Second Multi Thread', multiRecordId, 'Account');
+            System.assertNotEquals(null, second, 'Second thread should be allowed when single-thread mode is disabled');
+
+            GNT_ChatMessageController.setSingleThreadModeForTest(true);
+            Id restrictedRecordId = '001000000000011AAA';
+            Id allowed = GNT_ChatMessageController.createThreadForRecord('First Restricted Thread', restrictedRecordId, 'Account');
+            System.assertNotEquals(null, allowed);
+
+            Boolean blocked = false;
+            try {
+                GNT_ChatMessageController.createThreadForRecord('Blocked Restricted Thread', restrictedRecordId, 'Account');
+            } catch (AuraHandledException expected) {
+                blocked = true;
+            }
+            System.assert(blocked, 'Second thread should be blocked when single-thread mode is enabled');
+        } finally {
+            GNT_ChatMessageController.resetSingleThreadModeCache();
+        }
     }
 }
