@@ -11,15 +11,22 @@
     <name>ApexTrigger</name>
   </types>
   <types>
+    <members>GNT_ChatConfiguration__mdt</members>
     <members>GNT_ChatMessage__c</members>
     <members>GNT_ChatThread__c</members>
     <name>CustomObject</name>
   </types>
   <types>
-    <members>GNT_Custom_Chat_User</members>
+    <members>GNT_ChatConfiguration__mdt.GNT_EnableSingleThread__c</members>
+    <name>CustomField</name>
+  </types>
+  <types>
+    <members>GNT_Custom_Chat_User_Edit</members>
+    <members>GNT_Custom_Chat_User_Read</members>
     <name>PermissionSet</name>
   </types>
   <types>
+    <members>GNT_ChatConfiguration__mdt-GNT Chat Configuration Layout</members>
     <members>GNT_ChatMessage__c-GNT Chat Messageレイアウト</members>
     <members>GNT_ChatThread__c-GNT Chat Threadレイアウト</members>
     <name>Layout</name>
@@ -42,6 +49,10 @@
   <types>
     <members>gntChatWorkspace</members>
     <name>LightningComponentBundle</name>
+  </types>
+  <types>
+    <members>GNT_ChatConfiguration.GNT_Default</members>
+    <name>CustomMetadata</name>
   </types>
   <version>59.0</version>
 </Package>
