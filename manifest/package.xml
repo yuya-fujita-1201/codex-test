@@ -2,6 +2,7 @@
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
   <types>
     <members>GNT_ChatMessageController</members>
+    <members>GNT_ChatMessageControllerTest</members>
     <members>GNT_ChatOutboundService</members>
     <name>ApexClass</name>
   </types>
@@ -19,12 +20,24 @@
     <name>PermissionSet</name>
   </types>
   <types>
+    <members>GNT_ChatMessage__c-GNT Chat Messageレイアウト</members>
+    <members>GNT_ChatThread__c-GNT Chat Threadレイアウト</members>
+    <name>Layout</name>
+  </types>
+  <types>
     <members>External_Chat</members>
     <name>NamedCredential</name>
   </types>
   <types>
+    <members>GNT_ChatMessage__c</members>
+    <members>GNT_ChatThread__c</members>
     <members>GNT_Chat_Workspace</members>
     <name>CustomTab</name>
+  </types>
+  <types>
+    <members>Chat_Message</members>
+    <members>Chat_Thread</members>
+    <name>FlexiPage</name>
   </types>
   <types>
     <members>gntChatWorkspace</members>
