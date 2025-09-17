@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>GNT_PostedByUser__c</fullName>
-    <label>GNT Posted By User</label>
-    <referenceTo>User</referenceTo>
-    <relationshipLabel>Messages Posted</relationshipLabel>
-    <relationshipName>Messages_Posted</relationshipName>
-    <type>Lookup</type>
-</CustomField>

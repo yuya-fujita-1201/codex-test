@@ -21,7 +21,7 @@ public with sharing class GNT_ChatOutboundService implements Database.AllowsCall
 
         // 外部側の最新仕様に合わせて以下のJSONで送信
         // {
-        //   salesforceRecordId, salesforceObjectType, threadTitle, threadDescription,
+        //   salesforceRecordId, salesforceObjectType, threadTitle,
         //   senderName, senderId, message, messageType
         // }
         // 外部側のRLS要件: salesforceRecordId は関連レコード（例: Account/Case等）のIdを送る想定
@@ -88,7 +88,6 @@ public with sharing class GNT_ChatOutboundService implements Database.AllowsCall
         // - salesforceRecordId: Thread の Salesforce Id（m.GNT_Thread__c）
         // - salesforceObjectType: Thread.GNT_RelatedObjectType__c
         // - threadTitle       : Thread.Name
-        // - threadDescription : Thread.GNT_Description__c
         // - senderName        : GNT_ChatMessage__c.GNT_PostedBy__c（空なら CreatedBy.Name を利用）
         // - senderId          : GNT_ChatMessage__c.CreatedById
         // - message           : GNT_ChatMessage__c.GNT_Body__c

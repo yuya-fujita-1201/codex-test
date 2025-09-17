@@ -12,7 +12,7 @@ Deploy
 
 Place the UI
 - In App Builder, drop `gntChatWorkspace` on an App/Home page.
-- Optionally, add `threadRelatedEditor` to the `GNT_ChatThread__c` record page to edit Related Record/Object/Description.
+- Optionally, add `threadRelatedEditor` to the `GNT_ChatThread__c` record page to update related record/object fields.
 
 Field constraints
 - Title (`GNT_ChatThread__c.Name`): up to 80 chars (standard)
@@ -35,7 +35,6 @@ Outbound HTTP payload
     "salesforceRecordId": "001XXXXXXXXXX",          // from `GNT_ChatThread__c.GNT_RelatedRecordId__c`
     "salesforceObjectType": "Account",               // from `GNT_ChatThread__c.GNT_RelatedObjectType__c`
     "threadTitle": "...",                            // `GNT_ChatThread__c.Name`
-    "threadDescription": "...",                      // `GNT_ChatThread__c.GNT_Description__c`
     "senderName": "...",                             // `GNT_ChatMessage__c.GNT_PostedBy__c`
     "senderId": "005XXXXXXXXXX",                     // `GNT_ChatMessage__c.CreatedById`
     "message": "...",                                 // `GNT_ChatMessage__c.GNT_Body__c`

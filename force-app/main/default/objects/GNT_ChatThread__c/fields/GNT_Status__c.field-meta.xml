@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>GNT_Status__c</fullName>
-    <label>GNT Status</label>
+    <label>ステータス</label>
     <type>Picklist</type>
     <valueSet>
         <valueSetDefinition>
@@ -9,12 +9,12 @@
             <value>
                 <fullName>Active</fullName>
                 <default>true</default>
-                <label>Active</label>
+                <label>アクティブ</label>
             </value>
             <value>
                 <fullName>Closed</fullName>
                 <default>false</default>
-                <label>Closed</label>
+                <label>クローズ</label>
             </value>
         </valueSetDefinition>
     </valueSet>

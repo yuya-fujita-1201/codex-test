@@ -3,11 +3,11 @@
     <deploymentStatus>Deployed</deploymentStatus>
     <description>Chat thread for custom chat.</description>
     <enableActivities>true</enableActivities>
-    <label>GNT Chat Thread</label>
-    <pluralLabel>GNT Chat Threads</pluralLabel>
+    <label>GNT チャットスレッド</label>
+    <pluralLabel>GNT チャットスレッド</pluralLabel>
     <sharingModel>Private</sharingModel>
     <nameField>
-        <label>Title</label>
+        <label>タイトル</label>
         <type>Text</type>
     </nameField>
 </CustomObject>

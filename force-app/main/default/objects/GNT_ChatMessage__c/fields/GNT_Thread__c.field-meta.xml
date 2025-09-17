@@ -2,9 +2,9 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>GNT_Thread__c</fullName>
     <description>Parent Chat Thread</description>
-    <label>GNT Thread</label>
+    <label>チャットスレッド</label>
     <referenceTo>GNT_ChatThread__c</referenceTo>
-    <relationshipLabel>Messages</relationshipLabel>
+    <relationshipLabel>メッセージ</relationshipLabel>
     <relationshipName>Messages</relationshipName>
     <reparentableMasterDetail>true</reparentableMasterDetail>
     <type>MasterDetail</type>

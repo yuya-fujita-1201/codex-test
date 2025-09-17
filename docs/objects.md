@@ -4,9 +4,7 @@
 - 概要: チャットスレッド。
 - 主な項目:
   - `Name`(テキスト): タイトル
-  - `GNT_Description__c`(テキスト): 説明
   - `GNT_Status__c`(ピックリスト): 状態（例: Active）
-  - `GNT_ExternalThreadId__c`(テキスト): 外部システムのスレッドID
   - `GNT_RelatedRecordId__c`(テキスト): 関連レコードID
   - `GNT_RelatedObjectType__c`(テキスト): 関連オブジェクト種別
 
@@ -15,7 +13,6 @@
 - 主な項目:
   - `GNT_Body__c`(長テキスト): 本文（最大1000）
   - `GNT_Thread__c`(主従): 親スレッド
-  - `GNT_PostedByUser__c`(参照:User): 投稿者ユーザ参照
   - `GNT_PostedBy__c`(テキスト): 投稿者名（画面/API表示用）
   - `GNT_PostedAt__c`(日時): 投稿日時
   - `GNT_ExternalMessageId__c`(外部ID,一意): 外部メッセージID

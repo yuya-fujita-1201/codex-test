@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>GNT_RelatedObjectType__c</fullName>
-    <label>GNT Related Object Type</label>
+    <label>関連オブジェクト種別</label>
     <length>80</length>
     <type>Text</type>
 </CustomField>

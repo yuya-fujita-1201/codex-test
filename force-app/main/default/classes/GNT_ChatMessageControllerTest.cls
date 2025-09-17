@@ -32,7 +32,6 @@ private class GNT_ChatMessageControllerTest {
         return new GNT_ChatThread__c(
             Name = closed ? 'Closed Thread' : 'Open Thread',
             GNT_Status__c = closed ? 'Closed' : 'Active',
-            GNT_Description__c = '説明',
             GNT_RelatedRecordId__c = withRelated ? String.valueOf(RELATED_ID) : null,
             GNT_RelatedObjectType__c = withRelated ? 'Account' : null
         );
@@ -44,7 +43,6 @@ private class GNT_ChatMessageControllerTest {
             GNT_Body__c = body,
             GNT_PostedAt__c = System.now().addSeconds(-60),
             GNT_PostedBy__c = 'Tester',
-            GNT_PostedByUser__c = UserInfo.getUserId(),
             GNT_SyncStatus__c = status,
             GNT_ErrorMessage__c = null,
             GNT_ExternalMessageId__c = null

@@ -3,7 +3,7 @@ public with sharing class GNT_ChatMessageController {
     public static List<GNT_ChatThread__c> getRecentThreads(Integer limitSize) {
         Integer lim = (limitSize == null || limitSize <= 0) ? 20 : limitSize;
         return [
-            SELECT Id, Name, GNT_Description__c, GNT_ExternalThreadId__c, GNT_Status__c, CreatedDate
+            SELECT Id, Name, GNT_Status__c, CreatedDate
             FROM GNT_ChatThread__c
             ORDER BY CreatedDate DESC
             LIMIT :lim
@@ -16,7 +16,7 @@ public with sharing class GNT_ChatMessageController {
         if (recordId == null) return getRecentThreads(limitSize);
         Integer lim = (limitSize == null || limitSize <= 0) ? 20 : limitSize;
         return [
-            SELECT Id, Name, GNT_Description__c, GNT_ExternalThreadId__c, GNT_Status__c, CreatedDate, GNT_RelatedRecordId__c, GNT_RelatedObjectType__c
+            SELECT Id, Name, GNT_Status__c, CreatedDate, GNT_RelatedRecordId__c, GNT_RelatedObjectType__c
             FROM GNT_ChatThread__c
             WHERE GNT_RelatedRecordId__c = :recordId
             ORDER BY CreatedDate DESC
@@ -119,7 +119,6 @@ public with sharing class GNT_ChatMessageController {
             GNT_Body__c = body,
             GNT_PostedAt__c = Datetime.now(),
             GNT_PostedBy__c = UserInfo.getName(),
-            GNT_PostedByUser__c = UserInfo.getUserId(),
             GNT_SyncStatus__c = 'Pending',
             GNT_ExternalMessageId__c = null,
             GNT_ErrorMessage__c = null

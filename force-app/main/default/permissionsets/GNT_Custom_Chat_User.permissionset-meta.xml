@@ -64,11 +64,6 @@
     <!-- Omit FLS for master-detail field GNT_ChatMessage__c.GNT_Thread__c -->
     <fieldPermissions>
         <editable>true</editable>
-        <field>GNT_ChatMessage__c.GNT_PostedByUser__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
         <field>GNT_ChatMessage__c.GNT_PostedBy__c</field>
         <readable>true</readable>
     </fieldPermissions>

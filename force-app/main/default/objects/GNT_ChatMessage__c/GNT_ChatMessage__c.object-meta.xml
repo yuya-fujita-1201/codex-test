@@ -3,12 +3,12 @@
     <deploymentStatus>Deployed</deploymentStatus>
     <description>Chat message for custom chat.</description>
     <enableActivities>false</enableActivities>
-    <label>GNT Chat Message</label>
-    <pluralLabel>GNT Chat Messages</pluralLabel>
+    <label>GNT チャットメッセージ</label>
+    <pluralLabel>GNT チャットメッセージ</pluralLabel>
     <sharingModel>ControlledByParent</sharingModel>
     <nameField>
         <displayFormat>CM-{000000}</displayFormat>
-        <label>Message Number</label>
+        <label>メッセージ番号</label>
         <type>AutoNumber</type>
     </nameField>
 </CustomObject>
