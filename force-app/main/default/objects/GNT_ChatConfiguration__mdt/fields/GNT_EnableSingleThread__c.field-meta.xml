@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>GNT_EnableSingleThread__c</fullName>
-    <label>Enable Single Thread Per Record</label>
-    <type>Checkbox</type>
     <defaultValue>false</defaultValue>
     <description>When true, blocks creation of additional chat threads for the same related record.</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>Enable Single Thread Per Record</label>
+    <type>Checkbox</type>
 </CustomField>

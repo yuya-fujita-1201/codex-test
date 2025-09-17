@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
-    <label>GNT_Custom_Chat_User_Read</label>
-    <hasActivationRequired>false</hasActivationRequired>
-
-    <!-- Apex access for LWC controller -->
     <classAccesses>
         <apexClass>GNT_ChatMessageController</apexClass>
         <enabled>true</enabled>
@@ -12,64 +8,14 @@
         <apexClass>GNT_ChatOutboundService</apexClass>
         <enabled>true</enabled>
     </classAccesses>
-
-    <!-- Object permissions -->
-    <objectPermissions>
-        <allowCreate>true</allowCreate>
-        <allowDelete>false</allowDelete>
-        <allowEdit>false</allowEdit>
-        <allowRead>true</allowRead>
-        <modifyAllRecords>false</modifyAllRecords>
-        <object>GNT_ChatThread__c</object>
-        <viewAllRecords>false</viewAllRecords>
-    </objectPermissions>
-    <objectPermissions>
-        <allowCreate>true</allowCreate>
-        <allowDelete>false</allowDelete>
-        <allowEdit>false</allowEdit>
-        <allowRead>true</allowRead>
-        <modifyAllRecords>false</modifyAllRecords>
-        <object>GNT_ChatMessage__c</object>
-        <viewAllRecords>false</viewAllRecords>
-    </objectPermissions>
-
-    <!-- Field permissions: GNT_ChatThread__c -->
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>GNT_ChatThread__c.Name</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>GNT_ChatThread__c.GNT_Status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>GNT_ChatThread__c.GNT_RelatedRecordId__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>GNT_ChatThread__c.GNT_RelatedObjectType__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-
-    <!-- Field permissions: GNT_ChatMessage__c -->
     <fieldPermissions>
         <editable>false</editable>
         <field>GNT_ChatMessage__c.GNT_Body__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- Omit FLS for master-detail field GNT_ChatMessage__c.GNT_Thread__c -->
     <fieldPermissions>
         <editable>false</editable>
-        <field>GNT_ChatMessage__c.GNT_PostedBy__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>GNT_ChatMessage__c.GNT_PostedAt__c</field>
+        <field>GNT_ChatMessage__c.GNT_ErrorMessage__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -79,20 +25,56 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>GNT_ChatMessage__c.GNT_PostedAt__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>GNT_ChatMessage__c.GNT_PostedBy__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>GNT_ChatMessage__c.GNT_SyncStatus__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>GNT_ChatMessage__c.GNT_ErrorMessage__c</field>
+        <field>GNT_ChatThread__c.GNT_RelatedObjectType__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
-
-    <!-- Tab visibility -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>GNT_ChatThread__c.GNT_RelatedRecordId__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>GNT_ChatThread__c.GNT_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>GNT_Custom_Chat_User_Read</label>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>GNT_ChatMessage__c</object>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>GNT_ChatThread__c</object>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
     <tabSettings>
         <tab>GNT_Chat_Workspace</tab>
         <visibility>Visible</visibility>
     </tabSettings>
-    <!-- GNT_ChatThread__c / GNT_ChatMessage__c tabs are not defined; omit tab settings -->
 </PermissionSet>

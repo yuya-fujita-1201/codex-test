@@ -1,4 +1,6 @@
 .sfdx/
 .sf/
+.sf/orgs/*/localSourceTracking/
 
 _sfdx_tmp_migrate/
+node_modules
