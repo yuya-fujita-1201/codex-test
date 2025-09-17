@@ -25,7 +25,7 @@
     <name>Layout</name>
   </types>
   <types>
-    <members>External_Chat</members>
+    <members>GNT_Azure_Chat_NC</members>
     <name>NamedCredential</name>
   </types>
   <types>

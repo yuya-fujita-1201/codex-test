@@ -29,7 +29,7 @@
   - 同期結果のACK。項目: `MessageId__c`, `ExternalMessageId__c`, `Success__c`, `ErrorMessage__c`, `CorrelationKey__c`
 
 ### Named Credential
-- `External_Chat`（NoAuthentication, HTTPS エンドポイント）
+- `GNT_Azure_Chat_NC`（SecuredEndpoint, External Credential `GNT_Azure_EC` 経由で HTTPS エンドポイントへ接続）
 
 ### 権限セット
 - `GNT_Custom_Chat_User`

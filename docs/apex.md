@@ -12,7 +12,7 @@
   - `publishMessageOut(List<GNT_ChatMessage__c>)`: Salesforce 内の変更を `ChatMessageOut__e` として配信。
 
 - `ChatOutboundQueueable`（`Queueable`, `Database.AllowsCallouts`）
-  - `execute`: `GNT_ChatMessage__c` をバッチ分割して外部にPOST（Named Credential `External_Chat` 経由）。
+  - `execute`: `GNT_ChatMessage__c` をバッチ分割して外部にPOST（Named Credential `GNT_Azure_Chat_NC` 経由）。
   - 成功/失敗に応じて `GNT_SyncStatus__c` と `GNT_ErrorMessage__c` を更新。
 
 ### トリガ

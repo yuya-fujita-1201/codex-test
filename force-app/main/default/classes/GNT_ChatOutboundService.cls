@@ -41,7 +41,7 @@ public with sharing class GNT_ChatOutboundService implements Database.AllowsCall
         };
 
         HttpRequest req = new HttpRequest();
-        req.setEndpoint('callout:External_Chat');
+        req.setEndpoint('callout:GNT_Azure_Chat_NC');
         req.setMethod('POST');
         req.setHeader('Content-Type', 'application/json');
         req.setBody(JSON.serialize(body));
@@ -108,7 +108,7 @@ public with sharing class GNT_ChatOutboundService implements Database.AllowsCall
         };
 
         HttpRequest req = new HttpRequest();
-        req.setEndpoint('callout:External_Chat');
+        req.setEndpoint('callout:GNT_Azure_Chat_NC');
         req.setMethod('POST');
         req.setHeader('Content-Type', 'application/json');
         req.setBody(JSON.serialize(body));

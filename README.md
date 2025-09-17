@@ -22,13 +22,13 @@ Field constraints
 Sync flow (Platform Events + HTTP)
 - SF → External (HTTP POST):
 - `GNT_ChatMessageTrigger` marks Pending and publishes `ChatMessageOut__e`.
-  - `ChatMessageOutTrigger` enqueues `ChatOutboundQueueable` which POSTs to Named Credential `External_Chat`.
+  - `ChatMessageOutTrigger` enqueues `ChatOutboundQueueable` which POSTs to Named Credential `GNT_Azure_Chat_NC`.
 - 成否によって `GNT_SyncStatus__c` を `Synced`/`Failed` に更新（✅/⚠️）。
 - External ACK → SF (optional): 代替で`ChatSyncAck__e`をPublishしても運用可能。
 - External → SF message: `ChatMessageIn__e`をPublish（`Payload__c`に`{"body":"..."}`）→ Upsert。
 
 Outbound HTTP payload
-- Endpoint (Named Credential `External_Chat`):
+- Endpoint (Named Credential `GNT_Azure_Chat_NC`):
   - `https://onnxytxwhfarcnlcstut.supabase.co/functions/v1/receive-from-salesforce`
 - JSON body example:
   {
@@ -47,6 +47,6 @@ Notes
 - Add a Permission Set granting object/field access and LWC Apex class access before rollout.
 
 Setup
-- Named Credential `External_Chat` は上記URLにAnonymousで作成済み（メタデータ同梱）。
+- Named Credential `GNT_Azure_Chat_NC` は上記URLを External Credential `GNT_Azure_EC` 経由で呼び出します（メタデータ同梱）。
 - 認証が必要な場合はNamed Credentialを変更してください。
 - Permission Set: Assign `GNT_Custom_Chat_User` to end users for object/field and Apex access.

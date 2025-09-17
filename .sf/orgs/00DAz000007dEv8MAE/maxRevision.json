@@ -1,6 +1,6 @@
 {
     "fileVersion": 0,
-    "serverMaxRevisionCounter": 4170,
+    "serverMaxRevisionCounter": 4183,
     "sourceMembers": {
         "NamedCredential__GNT_Azure_Blob_NC": {
             "memberType": "NamedCredential",
@@ -10,8 +10,8 @@
         },
         "NamedCredential__GNT_Azure_Announcement_NC": {
             "memberType": "NamedCredential",
-            "serverRevisionCounter": 154,
-            "lastRetrievedFromServer": null,
+            "serverRevisionCounter": 4173,
+            "lastRetrievedFromServer": 4173,
             "isNameObsolete": false
         },
         "ExternalCredential__GNT_Azure_EC": {
@@ -1818,6 +1818,12 @@
             "memberType": "FlexiPage",
             "serverRevisionCounter": 4152,
             "lastRetrievedFromServer": 4152,
+            "isNameObsolete": false
+        },
+        "NamedCredential__GNT_Azure_Chat_NC": {
+            "memberType": "NamedCredential",
+            "serverRevisionCounter": 4183,
+            "lastRetrievedFromServer": 4183,
             "isNameObsolete": false
         }
     }
