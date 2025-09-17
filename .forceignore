@@ -1,3 +1,4 @@
 **/jsconfig.json
 
 **/.eslintrc.json
+force-app/main/default/lwc/**/__tests__/**
