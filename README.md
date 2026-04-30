@@ -50,3 +50,9 @@ Setup
 - Named Credential `GNT_Azure_Chat_NC` は上記URLを External Credential `GNT_Azure_EC` 経由で呼び出します（メタデータ同梱）。
 - 認証が必要な場合はNamed Credentialを変更してください。
 - Permission Set: Assign `GNT_Custom_Chat_User` to end users for object/field and Apex access.
+
+---
+
+## おまけ: スマホ向けミニシューティング
+
+`docs/mobile-shooter/index.html` をブラウザで開くと、スマホで遊べるシンプルな2Dシューティングゲームを実行できます。左右移動ボタンと発射ボタン（または画面タップ）に対応しています。
